@@ -1,1 +1,23 @@
 /* ここにcssを入れてください */
+
+/*背景*/
+/*あとでclassを揃える*/
+body {
+    margin: 0;
+    background-color: black;
+}
+
+.game {
+    width: 800px;
+    height: 400px;
+    margin: 50px auto;
+    border: 3px solid white;
+  
+    background: linear-gradient(
+      to top,
+      #222 0%,
+      #444 40%,
+      #87ceeb 100%
+    );
+  }
+  
