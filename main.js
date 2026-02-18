@@ -1,19 +1,91 @@
 // javascはここに入れてください
+// javascはここに入れてください
 //プレイヤーHPの作成
+<<<<<<< HEAD
 let p1Hp = 100,p2Hp = 100;
-let 
+=======
+let p1Hp = 100;
+let p2Hp = 100;
+let Guard = false;          //　ガード受付中か
+let guardSuccess = false;   //　ガードに成功したか
+>>>>>>> 6956a90c130679489c4d80f6dbda665578bca854
 
 function Damage(dmg) {
     p1Hp -= dmg;
     updateUI();
-    const p1 = document.getElementById('p1');
+    document.getElementById('p1').classList.add('shake');
+    setTimeout(() => document.getElementById('p1').classList.remove('shake'), 300);
 }
+
+//プレイヤーの攻撃
+function playerAttack(type) {
+    document.getElementById('attack-menu').style.display = 'none';
+    const dmg = type === 'punch' ? 10 : 20;
+    const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
+
+    const p1 = document.getElementById('p1');
+    p1.classList.add(anim);
+
+    setTimeout(() => {
+        p2Hp -= dmg;
+        updateUI();
+        document.getElementById('p2').classList.add('shake');
+        setTimeout(() => {
+            p1.classList.remove(anim);
+            document.getElementById('p2').classList.remove('shake');
+            enemyTurn();    //敵のターンへ
+        }, 300);
+    },200);
+}
+
+//敵の攻撃フェーズ（ガードチャンス）
+function enemyTurn() {
+    document.getElementById('guard-menu').style.display = 'block';
+
+    const p2 = document.getElementById('p2');
+
+    setTimeout(() => {
+        p2.classList.add('punch-anim'); // 敵の攻撃始動
+        Guard = true;
+        guardSuccess = false;
+        setTimeout(() => {
+            Guard = false;
+            // ガードに成功していなければダメージ
+            if (!guardSuccess) {
+                takeDamage(15);
+            }
+      
+            p2.classList.remove('punch-anim');
+            finishTurn();
+        }, 600); // 受付時間
+    }, 1000);
+}
+
+// 3. ガードボタンを押した時の処理
+function attemptGuard() {
+    if (isGuardWindowOpen) {
+      guardSuccess = true;
+      isGuardWindowOpen = false; // 二度押し防止
+      document.getElementById('msg').innerText = "ガード成功！反撃！";
+      
+      // 反撃演出
+      const p1 = document.getElementById('p1');
+      p1.classList.add('counter-flash');
+      p2Hp -= 15; // 敵にダメージ
+      updateUI();
+      
+      setTimeout(() => p1.classList.remove('counter-flash'), 200);
+    } else {
+      document.getElementById('msg').innerText = "ガード失敗！";
+    }
+  }
 
 function finishTurn() {
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
     document.getElementById().style.display = 'none';
     document.getElementById().style.display = 'block';
+    
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
     if (p1Hp <= 0) {
@@ -24,9 +96,12 @@ function finishTurn() {
     }else if(p2Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU WIN!");
+
+    //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
     }else if(p1Hp <= 0 && p2Hp <=0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("DRAW");
+    //次のターンへ
     }else {
         NextTurn();
     }
@@ -193,7 +268,7 @@ function updateUI() {
     });
 
     // 技の処理
-    guard.addEventListener('click',function(){
+    waza.addEventListener('click',function(){
         changeImage('waza');
         console.log('waza');
     });
