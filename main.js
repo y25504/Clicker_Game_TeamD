@@ -1,14 +1,10 @@
 // javascはここに入れてください
 // javascはここに入れてください
 //プレイヤーHPの作成
-<<<<<<< HEAD
-let p1Hp = 100,p2Hp = 100;
-=======
 let p1Hp = 100;
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
->>>>>>> 6956a90c130679489c4d80f6dbda665578bca854
 
 function Damage(dmg) {
     p1Hp -= dmg;
@@ -228,7 +224,8 @@ function updateUI() {
         //*それをcharacter_Imgに代入することで、ボタンとキャラクタに応じて写真を変更できる！/
 
 // キャラクター名の変数
-    const character_Name = document.getElementById('character_Name');
+    const character_Name = document.getElementById('character_Name').textContent;
+    console.log(character_Name);
 
 // ボタンのDOM
     var punch = document.getElementById('punch');
@@ -242,12 +239,14 @@ function updateUI() {
 
 /************************************************************************************************************************************/
 
-    var character_Img = document.getElementById('character.Img');
+    var character_photo = document.getElementById('character_Img');
 
-    function changeImage(motion){
+   function changeImage(motion){
         const fileName = `${character_Name}_${motion}.png`;
-        character_Img = fileName;
-    }
+        console.log(fileName);
+        character_photo.src = "images/character1/"+fileName;
+        console.log(character_photo.src);
+    } 
 
     // パンチの処理
     punch.addEventListener('click',function(){

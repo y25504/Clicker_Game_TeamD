@@ -4,7 +4,7 @@
 /*あとでclassを揃える*/
 body {
     margin: 0;
-    background-color: black;
+    background-color: rgb(255, 255, 255);
 }
 
 .game {
@@ -21,3 +21,8 @@ body {
     );
   }
   
+  .character_photo_div{
+    width: 100px;
+    height: 100px;
+    background-color: #87ceeb;
+  }
