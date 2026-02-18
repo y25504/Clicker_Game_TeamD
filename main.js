@@ -1,38 +1,60 @@
-// javascはここに入れてください
-// javascはここに入れてください
+
 //プレイヤーHPの作成
 let p1Hp = 100;
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
-function Damage(dmg) {
-    p1Hp -= dmg;
-    updateUI();
-    document.getElementById('p1').classList.add('shake');
-    setTimeout(() => document.getElementById('p1').classList.remove('shake'), 300);
-}
+// button class attack-buttonのdomを取得
+    const attackButtons = document.querySelectorAll(".attack-button");
+
+// 各ボタンにクリックイベントを設定
+// forEach - 
+    attackButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log('ボタン押されました');
+            const type = button.id; // 'punch' か 'kick' を取得
+            console.log(type);
+            playerAttack(type); // 関数を実行
+        });
+    });
+
+
 
 //プレイヤーの攻撃
+// ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
+// **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
     document.getElementById('attack-menu').style.display = 'none';
+
     const dmg = type === 'punch' ? 10 : 20;
-    const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
+    // 画像の切り替えは下のモーション関数で行うので、なくてもいいかなあ:::::::::::::::::::::::::::::::::::::::::::::::///
+    // const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
 
     const p1 = document.getElementById('p1');
-    p1.classList.add(anim);
+    // p1.classList.add(anim);
 
+    //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
     setTimeout(() => {
         p2Hp -= dmg;
         updateUI();
-        document.getElementById('p2').classList.add('shake');
         setTimeout(() => {
-            p1.classList.remove(anim);
-            document.getElementById('p2').classList.remove('shake');
             enemyTurn();    //敵のターンへ
-        }, 300);
+        }, 
+        300);//秒数（ミリ秒）
     },200);
 }
+
+
+
+// プレイヤーのダメージを計算
+// 振動させる
+function Damage(dmg) {
+    p1Hp -= dmg;
+    updateUI();
+}
+
+
 
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
@@ -50,31 +72,31 @@ function enemyTurn() {
             if (!guardSuccess) {
                 takeDamage(15);
             }
-      
+
             p2.classList.remove('punch-anim');
             finishTurn();
         }, 600); // 受付時間
     }, 1000);
 }
 
-// 3. ガードボタンを押した時の処理
-function attemptGuard() {
-    if (isGuardWindowOpen) {
-      guardSuccess = true;
-      isGuardWindowOpen = false; // 二度押し防止
-      document.getElementById('msg').innerText = "ガード成功！反撃！";
+// // 3. ガードボタンを押した時の処理
+// function attemptGuard() {
+//     if (isGuardWindowOpen) {
+//       guardSuccess = true;
+//       isGuardWindowOpen = false; // 二度押し防止
+//       document.getElementById('msg').innerText = "ガード成功！反撃！";
       
-      // 反撃演出
-      const p1 = document.getElementById('p1');
-      p1.classList.add('counter-flash');
-      p2Hp -= 15; // 敵にダメージ
-      updateUI();
+//       // 反撃演出
+//       const p1 = document.getElementById('p1');
+//       p1.classList.add('counter-flash');
+//       p2Hp -= 15; // 敵にダメージ
+//       updateUI();
       
-      setTimeout(() => p1.classList.remove('counter-flash'), 200);
-    } else {
-      document.getElementById('msg').innerText = "ガード失敗！";
-    }
-  }
+//       setTimeout(() => p1.classList.remove('counter-flash'), 200);
+//     } else {
+//       document.getElementById('msg').innerText = "ガード失敗！";
+//     }
+//   }
 
 function finishTurn() {
     setTimeout(() => {

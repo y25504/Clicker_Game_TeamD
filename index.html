@@ -7,40 +7,37 @@
     <title>Document</title>
 </head>
 <body>
-<link rel="stylesheet" href="style.css">
-    <h1 id="character_Name">hatman</h1> <div id="msg">READY...</div>
+    <link rel="stylesheet" href="style.css">
+        <h1 id="character_Name">hatman</h1> <div id="msg">READY...</div>
 
-<!-- HP表示************************************************************************************* -->
-<div class="hp-container">
-    <!--HPBAR-->
-    <div>
-        <p>PLAYER (P1)</p>
-            <div class="hp-bar-outer"><div id="p1-Hp" class="hp-bar-inner"></div></div>
+    <!-- HP表示************************************************************************************* -->
+        <div class="hp-container">
+                <p>PLAYER (P1)</p>
+                    <div class="hp-bar-outer"><div id="p1-Hp" class="hp-bar-inner"></div></div>
+            <div>
+                <p>ENEMY (P2)</p>
+                    <div class="hp-bar-outer"><div id="p2-Hp" class="hp-bar-inner"></div></div>
+            </div>
+        </div>
+    <!-- ******************************************************************************************* -->
+
+
+    <!-- *キャラクター画像表示*************************************************************************** -->
+        <div class="character_Img_div">
+            <img id="character_Img" src="images/character1/hatman_default.png" alt="キャラクター画像">
+        </div>
+    <!-- ********************************************************************************************* -->
+
+    <div id="attack-menu">
+        <!--パンチ--> 
+            <button class="attack-button" id="punch">パンチ</button>
+        <!--キック--> 
+            <button class="attack-button" id="kick">キック</button>
+        <!--ガード--> 
+            <button class="attack-button" id="guard">ガード</button>
+        <!--必殺技-->
+            <button class="attack-button" id="waza">必殺技</button>
     </div>
-    <div>
-        <p>ENEMY (P2)</p>
-            <div class="hp-bar-outer"><div id="p2-Hp" class="hp-bar-inner"></div></div>
-    </div>
-</div>
-<!-- ******************************************************************************************* -->
-
-
-<!-- キャラクター画像表示*************************************************************************** -->
-<div class="character_Img_div">
-    <img id="character_Img" src="images/character1/default-jp.png" alt="キャラクター画像">
-</div>
-<!-- ********************************************************************************************* -->
-
-<div class="controls">
-    <!--パンチ--> 
-        <button id="punch">パンチ</button>
-    <!--キック--> 
-        <button id="kick">キック</button>
-    <!--ガード--> 
-        <button id="guard">ガード</button>
-    <!--必殺技-->
-        <button id="waza">必殺技</button>
-</div>
-    <script src="main.js"></script>
+        <script src="main.js"></script>
 </body>
 </html>
