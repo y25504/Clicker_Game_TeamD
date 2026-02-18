@@ -177,21 +177,25 @@ function updateUI() {
     // パンチの処理
     punch.addEventListener('click',function(){
         changeImage('punch');
+        console.log('punch');
     });
 
     // キックの処理
     kick.addEventListener('click',function(){
         changeImage('kick');
+        console.log('kick');
     });
 
     // ガードの処理
     guard.addEventListener('click',function(){
         changeImage('guard');
+        console.log('guard');
     });
 
     // 技の処理
     guard.addEventListener('click',function(){
         changeImage('waza');
+        console.log('waza');
     });
 
 
