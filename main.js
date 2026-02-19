@@ -8,6 +8,9 @@ let guardSuccess = false;   //　ガードに成功したか
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button");
 
+// ガードボタンのdomを取得
+    const guardBtn = document.getElementById('guard');
+
 // 各ボタンにクリックイベントを設定
 // forEach - 
     attackButtons.forEach(button => {
@@ -21,10 +24,11 @@ let guardSuccess = false;   //　ガードに成功したか
 
 
 
-//プレイヤーの攻撃
+//****************************************************プレイヤー攻撃フェーズ****************************************** */
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
+    // ボタン非表示
     document.getElementById('attack-menu').style.display = 'none';
 
     const dmg = type === 'punch' ? 10 : 20;
@@ -33,7 +37,6 @@ function playerAttack(type) {
 
     const p1 = document.getElementById('p1');
     // p1.classList.add(anim);
-
     //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
     setTimeout(() => {
         p2Hp -= dmg;
@@ -45,18 +48,11 @@ function playerAttack(type) {
         300);//秒数（ミリ秒）
     },200);
 }
+// **********************************************************************************************************************/
 
 
 
-// プレイヤーのダメージを計算
-// 振動させる
-function Damage(dmg) {
-    p1Hp -= dmg;
-    updateUI();
-}
-
-
-// ************************************************************************************ガードフェーズ********************
+// ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
     document.getElementById('guard-menu').style.display = 'block';
@@ -69,23 +65,31 @@ function enemyTurn() {
         // プレイヤーの準備時間が1000ms
         Guard = true;
         guardSuccess = false;
+
         setTimeout(() => {
             Guard = false;
             // ガードに成功していなければダメージ
-            if (!guardSuccess) {
-                takeDamage(15); 
-            }
-
+                if (!guardSuccess) {
+                    console.log('ガード失敗...');
+                    takeDamage(15); 
+                }
             // p2.classList.remove('punch-anim');
-            finishTurn();
+                finishTurn();
         }, 600); // 受付時間
     }, 1000);
 }
 
+// **********************************ガードボタン読み取り************************/
+    guardBtn.addEventListener('click', () => {
+        if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
+            guardSuccess = true;
+            console.log("ガード成功！");
+        }
+});
 
-function takeDamage(){
-    p2Hp -= dmg;
-        console.log("Enemy HP :"+p2Hp);
+function takeDamage(dmg){
+    p1Hp -= dmg;
+        console.log("P1 HP :"+p1Hp);
 
 }
 // **************************************************************************************************************************
@@ -114,8 +118,9 @@ function takeDamage(){
 function finishTurn() {
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
-    document.getElementById().style.display = 'none';
-    document.getElementById().style.display = 'block';
+    document.getElementById("guard-menu").style.display = 'none';
+    // 攻撃ボタンを表示
+    document.getElementById("attack-menu").style.display = 'block';
     
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
