@@ -37,6 +37,7 @@ function playerAttack(type) {
     //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
     setTimeout(() => {
         p2Hp -= dmg;
+        console.log("Enemy HP:"+p2Hp);
         updateUI();
         setTimeout(() => {
             enemyTurn();    //敵のターンへ
@@ -55,7 +56,7 @@ function Damage(dmg) {
 }
 
 
-
+// ************************************************************************************ガードフェーズ********************
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
     document.getElementById('guard-menu').style.display = 'block';
@@ -63,23 +64,35 @@ function enemyTurn() {
     const p2 = document.getElementById('p2');
 
     setTimeout(() => {
-        p2.classList.add('punch-anim'); // 敵の攻撃始動
+        // モーションは下のプログラムで行うのでいらないかなあ::::::::::::::::::::::::::::::::::::::::::::::::
+        // p2.classList.add('punch-anim'); // 敵の攻撃始動
+        // プレイヤーの準備時間が1000ms
         Guard = true;
         guardSuccess = false;
         setTimeout(() => {
             Guard = false;
             // ガードに成功していなければダメージ
             if (!guardSuccess) {
-                takeDamage(15);
+                takeDamage(15); 
             }
 
-            p2.classList.remove('punch-anim');
+            // p2.classList.remove('punch-anim');
             finishTurn();
         }, 600); // 受付時間
     }, 1000);
 }
 
-// // 3. ガードボタンを押した時の処理
+
+function takeDamage(){
+    p2Hp -= dmg;
+        console.log("Enemy HP :"+p2Hp);
+
+}
+// **************************************************************************************************************************
+
+
+
+
 // function attemptGuard() {
 //     if (isGuardWindowOpen) {
 //       guardSuccess = true;
