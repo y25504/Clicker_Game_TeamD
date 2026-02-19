@@ -27,5 +27,17 @@ body {
     background-color: #87ceeb;
   }
 
-  /* shakeクラスを作成。震えるエフェクトのクラスです */
-  /* キャラクターの画像サイズを一定にしてほしいです */
+  .display_container{
+    display: flex;
+    justify-content: space-between;
+    background-color: #222;
+  }
+
+  .control_container{
+    display: flex;
+    background-color: #87ceeb;
+    justify-content: center;
+  }
+
+  /* shakeクラスを作成。震えるエフェクトのクラス*/
+  /* キャラクターの画像サイズを一定にしてほしい*/

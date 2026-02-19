@@ -6,7 +6,7 @@ let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
 // button class attack-buttonのdomを取得
-    const attackButtons = document.querySelectorAll(".attack-button");
+    const attackButtons = document.querySelectorAll(".attack-button_item");
 
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
@@ -29,7 +29,7 @@ let guardSuccess = false;   //　ガードに成功したか
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
     // ボタン非表示
-    document.getElementById('attack-menu').style.display = 'none';
+    document.querySelector('.attack-menu_container').style.display = 'none';
 
     const dmg = type === 'punch' ? 10 : 20;
     // 画像の切り替えは下のモーション関数で行うので、なくてもいいかなあ:::::::::::::::::::::::::::::::::::::::::::::::///
@@ -55,7 +55,7 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
-    document.getElementById('guard-menu').style.display = 'block';
+    document.querySelector('.guard-menu').style.display = 'block';
 
     const p2 = document.getElementById('p2');
 
@@ -115,12 +115,16 @@ function takeDamage(dmg){
 //     }
 //   }
 
+// ************************************フェーズ終了************************************************************************//
+
 function finishTurn() {
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
-    document.getElementById("guard-menu").style.display = 'none';
+        document.querySelector(".guard-menu").style.display = 'none';
+        console.log('ガードメニューを非表示');
     // 攻撃ボタンを表示
-    document.getElementById("attack-menu").style.display = 'block';
+        document.querySelector(".attack-menu_container").style.display = 'block';
+        console.log("攻撃メニューを表示");
     
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
@@ -143,6 +147,15 @@ function finishTurn() {
     }
     }, 1000);
 }
+
+
+    function NextTurn(){
+    console.log("次のターン開始");
+        // 画像をデフォルトの状態に戻す
+            character_photo.src = `images/character1/${character_Name}_default.png`;
+            console.log(character_photo);
+        }
+        
 
 //HPバー(UI)の表示更新
 function updateUI() {
