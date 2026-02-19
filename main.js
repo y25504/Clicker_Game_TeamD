@@ -5,6 +5,10 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+// 初期状態は攻撃フェーズ
+document.getElementById('msg').innerText = "攻撃フェーズ";
+
+
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
 
@@ -28,6 +32,7 @@ let guardSuccess = false;   //　ガードに成功したか
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
+
     // ボタン非表示
     document.querySelector('.attack-menu_container').style.display = 'none';
 
@@ -35,17 +40,18 @@ function playerAttack(type) {
     // 画像の切り替えは下のモーション関数で行うので、なくてもいいかなあ:::::::::::::::::::::::::::::::::::::::::::::::///
     // const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
 
-    const p1 = document.getElementById('p1');
+    // const p1 = document.getElementById('p1');
     // p1.classList.add(anim);
     //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
     setTimeout(() => {
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
         updateUI();
+
         setTimeout(() => {
             enemyTurn();    //敵のターンへ
         }, 
-        300);//秒数（ミリ秒）
+        1000);//秒数（ミリ秒）
     },200);
 }
 // **********************************************************************************************************************/
@@ -55,9 +61,11 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+    document.getElementById('msg').innerText = "敵のフェーズ";
+
     document.querySelector('.guard-menu').style.display = 'block';
 
-    const p2 = document.getElementById('p2');
+    // const p2 = document.getElementById('p2');
 
     setTimeout(() => {
         // モーションは下のプログラムで行うのでいらないかなあ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -74,13 +82,16 @@ function enemyTurn() {
                     takeDamage(15); 
                 }
             // p2.classList.remove('punch-anim');
+                updateUI();
                 finishTurn();
-        }, 600); // 受付時間
-    }, 1000);
+        }, 1000); // 受付時間
+
+    }, 1500);// 敵の攻撃時間
 }
 
 // **********************************ガードボタン読み取り************************/
     guardBtn.addEventListener('click', () => {
+        console.log("ガードボタンが押された");
         if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
             guardSuccess = true;
             console.log("ガード成功！");
@@ -151,16 +162,28 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
-        // 画像をデフォルトの状態に戻す
+        // メッセージを攻撃フェーズに直す
+        // キャラクタの画像を通常に戻す
+            document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name}_default.png`;
             console.log(character_photo);
         }
         
 
-//HPバー(UI)の表示更新
+// ************************************HPの更新******************************************************************
+//*********************攻撃フェーズ、ガードフェーズの際、この関数が使われる****************************** */
 function updateUI() {
-    document.getElementById('p1-Hp').style.width = Math.max(0, p1Hp) + "%";
-    document.getElementById('p2-Hp').style.width = Math.max(0, p2Hp) + "%";
+
+    //*******************************数値を一定の範囲に収めるのがMath.max***************************** */
+    //************************.style.widthでhtmlの横幅を書き換える */
+        document.getElementById('p1-Hp').style.width = Math.max(0, p1Hp) + "%";
+        document.getElementById('p2-Hp').style.width = Math.max(0, p2Hp) + "%";
+
+
+        document.getElementById('p1-Hp-text').textContent = Math.max(0,p1Hp);
+        document.getElementById('p2-Hp-text').textContent = Math.max(0,p2Hp);
+        console.log("プレイヤーのHPを調整");
+
 }
 
 
