@@ -1,5 +1,5 @@
 <!-- ここにhtmlを入れてください -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -7,35 +7,66 @@
     <title>Document</title>
 </head>
 <body>
-<link rel="stylesheet" href="style.css">
-<h1 id="character_Name">HERO</h1> <div id="msg">READY...</div>
+    <link rel="stylesheet" href="style.css">
+    <!-- キャラクターネームを変数にして、切り替えができるようにしたい -->
+        <h1 id="character_Name">Hatman</h1>
 
-<div class="hp-container">
-    <!--HPBAR-->
-    <div>
-        <p>PLAYER (P1)</p>
-        <div class="hp-bar-outer"><div id="p1-Hp" class="hp-bar-inner"></div></div>
+    <!-- *HP表示************************************************************************************* --> 
+        <div class="hp-container">
+            <div class="hp-box">
+                <p>PLAYER (P1)<span id="p1-Hp-text">100</span>/100</p>
+                    <div class="hp-bar-outer_item">
+                            <div id="p1-Hp" class="hp-bar-inner"></div>
+                    </div>
+            </div>
+
+            <div class="hp-box">
+                <p>ENEMY (P2)<span id="p2-Hp-text">100</span>/100</p>
+                    <div class="hp-bar-outer_item">
+                            <div id="p2-Hp" class="hp-bar-inner"></div>
+                    </div>
+            </div>
+        </div>
+    <!-- ******************************************************************************************* -->
+
+
+    <!-- *キャラクター画像表示*************************************************************************** -->
+    <div class="display_container">
+            <div class="character_Img_item">
+                <img id="character_Img" src="images/character1/hatman_default.png" alt="キャラクター画像">
+            </div>
+                    <div class="msg_class" id="msg"></div>
+
+            <div class="enemy_Img_item">
+                <img id="enemy_Img" src="images/enemy1/whitekong_default.png" alt="敵画像">
+            </div>
     </div>
-    <div>
-        <p>ENEMY (P2)</p>
-        <div class="hp-bar-outer"><div id="p2-Hp" class="hp-bar-inner"></div></div>
+    
+    <!-- ********************************************************************************************* -->
+
+
+    <!-- ***攻撃・防御メニュー********************************************************************* -->
+    <div class="control_container">
+        <div class="attack-menu_container">
+                <!--パンチ--> 
+                    <button class="attack-button_item" id="punch">パンチ</button>
+                <!--キック--> 
+                    <button class="attack-button_item" id="kick">キック</button>
+                <!--必殺技-->
+                    <button class="attack-button_item" id="waza">必殺技</button>
+            </div>
+
+            <div class="guard-menu">
+                <!-- ガードボタン -->
+                    <button class="guard-button_item" id="guard">ガード</button>
+            </div>
     </div>
-</div>
-<div>
-    <img id="character_Img" src="" alt="キャラクター画像">
-</div>
-<div class="controls">
-<!--パンチ--> 
-<button id="punch">パンチ</button>
-<!--キック--> 
-<button id="kick">キック</button>
-<!--ガード--> 
-<button id="guard">ガード</button>
-<!--必殺技-->
-<button id="waza">必殺技</button>
-</div>
+    <!-- ******************************************************************************************** -->
+    
 
 
-    <script src="main.js"></script>
-</body>
+
+
+        <script src="main.js"></script>
+    </body>
 </html>
