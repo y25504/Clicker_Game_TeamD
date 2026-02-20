@@ -44,7 +44,7 @@ function playerAttack(type) {
         console.log("Enemy HP:"+p2Hp);
         updateUI();
         
-        // 敵HPが0になったら、勝敗判定の関数を呼び出す
+        // 敵HPが0以下になったら、勝敗判定の関数を呼び出す
         if(p2Hp <= 0){
             finishTurn();
             // playerAttack関数を終わらせる
@@ -67,6 +67,11 @@ function enemyTurn() {
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
 
+    //*******敵のモーションプログラム(punch,kick,wazaの中からランダムで)************************************************ */
+    //*******motionsの配列をいじることで、技が出る確率を調整できる* */
+        const motions = ['punch', 'kick', 'waza'];
+        const randomIndex = Math.floor(Math.random() * motions.length);
+        changeImage_enemy(motions[randomIndex]);
 
     setTimeout(() => {
 
@@ -150,7 +155,8 @@ function finishTurn() {
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
             document.getElementById('msg').innerText = "攻撃フェーズ";
-            character_photo.src = `images/character1/${character_Name}_default.png`;
+            character_photo.src = `images/character1/${character_Name_item}_default.png`;
+            enemy_photo.src = `images/enemy1/${enemy_Name}_default.png`;
             console.log(character_photo);
         }
         
@@ -281,12 +287,12 @@ function updateUI() {
 
 //*使用する関数について */
 //*changeImage_player*****//
-//***fileNameに、character_Name_とmotionを組み合わせた名前を代入 */
+//***fileNameに、character_Name_item_とmotionを組み合わせた名前を代入 */
         //*それをcharacter_Imgに代入することで、ボタンとキャラクタに応じて写真を変更できる！/
 
 // キャラクター名の変数
-    const character_Name = document.getElementById('character_Name').textContent;
-    console.log(character_Name);
+    const character_Name_item = document.getElementById('character_Name_item').textContent;
+    console.log(character_Name_item);
 
 // ボタンのDOM
     var punch = document.getElementById('punch');
@@ -303,7 +309,7 @@ function updateUI() {
     var character_photo = document.getElementById('character_Img');
 
     function changeImage_player(motion){
-        const fileName = `${character_Name}_${motion}.png`;
+        const fileName = `${character_Name_item}_${motion}.png`;
         console.log(fileName);
         character_photo.src = "images/character1/"+fileName;
         console.log(character_photo.src);
@@ -334,11 +340,14 @@ function updateUI() {
     });
 
 
-    //****************************************************敵のモーション******************************************/
+    //****************************************************敵のモーション(動作は上のモーションプログラムと同じ)******************************************/
+    var enemy_Name = document.getElementById("enemy_Name_item").textContent;
+    var enemy_photo = document.getElementById('enemy_Img');
+
 
     function changeImage_enemy(motion){
         const fileName = `${enemy_Name}_${motion}.png`;
         console.log(fileName);
-        character_photo.src = "images/character1/"+fileName;
-        console.log(character_photo.src);
+        enemy_photo.src = "images/enemy1/"+fileName;
+        console.log(enemy_photo.src);
     } 
