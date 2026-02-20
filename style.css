@@ -1,65 +1,164 @@
-/* ここにcssを入れてください */
-
-/*背景*/
-/*あとでclassを揃える*/
+/* --- 全体のレイアウト --- */
 body {
-    margin: 0;
-    background-color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a; 
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-button{
-  font-size: 100px;
+/* キャラクター名の装飾 */
+#character_Name {
+  font-size: 2.5rem;
+  margin: 20px 0;
+  letter-spacing: 4px;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
-.game {
-    width: 800px;
-    height: 400px;
-    margin: 50px auto;
-    border: 3px solid white;
-  
-    background: linear-gradient(
-      to top,
-      #222 0%,
-      #444 40%,
-      #87ceeb 100%
-    );
-  }
-  
-  .character_photo_div{
-    width: 100px;
-    height: 100px;
-    background-color: #87ceeb;
-  }
+/* --- HPバー --- */
+.hp-container {
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-  .display_container{
-    display: flex;
-    justify-content: space-between;
-    background-color: #222;
-  }
+.hp-box {
+  width: 45%;
+}
 
-  .control_container{
-    display: flex;
-    background-color: #87ceeb;
-    justify-content: center;
-    height: 300px;
-  }
+.hp-box p {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #eee;
+}
 
-  .hp-container{
-    display: flex;
-    justify-content: space-around;
-    font-size: 50px;
-    /* background-color: red; */
-  }
+.hp-bar-outer_item {
+  width: 100%;
+  height: 18px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #444;
+}
 
-      .hp-bar-outer_item{
-        background-color: green;
-      }
+.hp-bar-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff0055, #ffcc00, #00ff88);
+  background-size: 200% 100%;
+  transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
-    .msg_class{
-      width: 1000px;
-      font-size: 100px;
-      color: red;
-    }
-  /* HPバーの作成 */
-  /* shakeクラスを作成。震えるエフェクトのクラス*/
-  /* キャラクターの画像サイズを一定にしてほしい*/
+
+/* --- 背景 --- */
+.display_container {
+  width: 100%;
+  max-width: 1200px;
+  height: 550px;
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 20%, #2c3e50, #000);
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.display_container::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(to bottom, #1a3a1a 0%, #0d1a0d 100%);
+  transform: perspective(300px) rotateX(45deg);
+  border-top: 4px solid #3d5a3d;
+  z-index: 1;
+  filter: blur(1px);
+}
+
+.character_Img_item, .enemy_Img_item {
+  width: 350px; 
+  height: 350px;
+  z-index: 2; 
+  transition: transform 0.2s;
+}
+
+.character_Img_item img, .enemy_Img_item img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* --- 操作メニュー --- */
+.control_container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row; 
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 30px 0;
+  background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.1));
+}
+
+.attack-menu_container {
+  display: flex;
+  gap: 15px;
+}
+
+/* ボタンの装飾 */
+button {
+  padding: 12px 25px;
+  font-size: 1.2rem !important;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+#punch { background: #ff4444; color: white; box-shadow: 0 4px #991111; }
+#kick  { background: #ffbb00; color: white; box-shadow: 0 4px #997700; }
+#waza  { background: #aa00ff; color: white; box-shadow: 0 4px #550088; }
+#guard { background: #0088ff; color: white; box-shadow: 0 4px #004488; margin-left: 20px; }
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 #000;
+}
+
+/* メッセージ */
+.msg_class {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  text-align: center;
+  font-size: 5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px #ff0000;
+  z-index: 10;
+  pointer-events: none;
+}
