@@ -1,86 +1,141 @@
-// javascはここに入れてください
-// javascはここに入れてください
+
 //プレイヤーHPの作成
 let p1Hp = 100;
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
-function Damage(dmg) {
-    p1Hp -= dmg;
-    updateUI();
-    document.getElementById('p1').classList.add('shake');
-    setTimeout(() => document.getElementById('p1').classList.remove('shake'), 300);
-}
+// 初期状態は攻撃フェーズ
+document.getElementById('msg').innerText = "攻撃フェーズ";
 
-//プレイヤーの攻撃
+
+// button class attack-buttonのdomを取得
+    const attackButtons = document.querySelectorAll(".attack-button_item");
+
+// ガードボタンのdomを取得
+    const guardBtn = document.getElementById('guard');
+
+// 各ボタンにクリックイベントを設定
+// forEach - 
+    attackButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log('ボタン押されました');
+            const type = button.id; // 'punch' か 'kick' を取得
+            console.log(type);
+            playerAttack(type); // 関数を実行
+        });
+    });
+
+
+
+//****************************************************プレイヤー攻撃フェーズ****************************************** */
+// ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
+// **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
-    document.getElementById('attack-menu').style.display = 'none';
+
+    // ボタン非表示
+    document.querySelector('.attack-menu_container').style.display = 'none';
+
     const dmg = type === 'punch' ? 10 : 20;
-    const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
+    // 画像の切り替えは下のモーション関数で行うので、なくてもいいかなあ:::::::::::::::::::::::::::::::::::::::::::::::///
+    // const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
 
-    const p1 = document.getElementById('p1');
-    p1.classList.add(anim);
-
+    // const p1 = document.getElementById('p1');
+    // p1.classList.add(anim);
+    //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
     setTimeout(() => {
         p2Hp -= dmg;
+        console.log("Enemy HP:"+p2Hp);
         updateUI();
-        document.getElementById('p2').classList.add('shake');
+
         setTimeout(() => {
-            p1.classList.remove(anim);
-            document.getElementById('p2').classList.remove('shake');
             enemyTurn();    //敵のターンへ
-        }, 300);
+        }, 
+        1000);//秒数（ミリ秒）
     },200);
 }
+// **********************************************************************************************************************/
 
+
+
+// ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
-    document.getElementById('guard-menu').style.display = 'block';
+    document.getElementById('msg').innerText = "敵のフェーズ";
 
-    const p2 = document.getElementById('p2');
+    document.querySelector('.guard-menu').style.display = 'block';
+
+    // const p2 = document.getElementById('p2');
 
     setTimeout(() => {
-        p2.classList.add('punch-anim'); // 敵の攻撃始動
+        // モーションは下のプログラムで行うのでいらないかなあ::::::::::::::::::::::::::::::::::::::::::::::::
+        // p2.classList.add('punch-anim'); // 敵の攻撃始動
+        // プレイヤーの準備時間が1000ms
         Guard = true;
         guardSuccess = false;
+
         setTimeout(() => {
             Guard = false;
             // ガードに成功していなければダメージ
-            if (!guardSuccess) {
-                takeDamage(15);
-            }
-      
-            p2.classList.remove('punch-anim');
-            finishTurn();
-        }, 600); // 受付時間
-    }, 1000);
+                if (!guardSuccess) {
+                    console.log('ガード失敗...');
+                    takeDamage(15); 
+                }
+            // p2.classList.remove('punch-anim');
+                updateUI();
+                finishTurn();
+        }, 1000); // 受付時間
+
+    }, 1500);// 敵の攻撃時間
 }
 
-// 3. ガードボタンを押した時の処理
-function attemptGuard() {
-    if (isGuardWindowOpen) {
-      guardSuccess = true;
-      isGuardWindowOpen = false; // 二度押し防止
-      document.getElementById('msg').innerText = "ガード成功！反撃！";
+// **********************************ガードボタン読み取り************************/
+    guardBtn.addEventListener('click', () => {
+        console.log("ガードボタンが押された");
+        if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
+            guardSuccess = true;
+            console.log("ガード成功！");
+        }
+});
+
+function takeDamage(dmg){
+    p1Hp -= dmg;
+        console.log("P1 HP :"+p1Hp);
+
+}
+// **************************************************************************************************************************
+
+
+
+
+// function attemptGuard() {
+//     if (isGuardWindowOpen) {
+//       guardSuccess = true;
+//       isGuardWindowOpen = false; // 二度押し防止
+//       document.getElementById('msg').innerText = "ガード成功！反撃！";
       
-      // 反撃演出
-      const p1 = document.getElementById('p1');
-      p1.classList.add('counter-flash');
-      p2Hp -= 15; // 敵にダメージ
-      updateUI();
+//       // 反撃演出
+//       const p1 = document.getElementById('p1');
+//       p1.classList.add('counter-flash');
+//       p2Hp -= 15; // 敵にダメージ
+//       updateUI();
       
-      setTimeout(() => p1.classList.remove('counter-flash'), 200);
-    } else {
-      document.getElementById('msg').innerText = "ガード失敗！";
-    }
-  }
+//       setTimeout(() => p1.classList.remove('counter-flash'), 200);
+//     } else {
+//       document.getElementById('msg').innerText = "ガード失敗！";
+//     }
+//   }
+
+// ************************************フェーズ終了************************************************************************//
 
 function finishTurn() {
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
-    document.getElementById().style.display = 'none';
-    document.getElementById().style.display = 'block';
+        document.querySelector(".guard-menu").style.display = 'none';
+        console.log('ガードメニューを非表示');
+    // 攻撃ボタンを表示
+        document.querySelector(".attack-menu_container").style.display = 'block';
+        console.log("攻撃メニューを表示");
     
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
@@ -104,10 +159,31 @@ function finishTurn() {
     }, 1000);
 }
 
-//HPバー(UI)の表示更新
+
+    function NextTurn(){
+    console.log("次のターン開始");
+        // メッセージを攻撃フェーズに直す
+        // キャラクタの画像を通常に戻す
+            document.getElementById('msg').innerText = "攻撃フェーズ";
+            character_photo.src = `images/character1/${character_Name}_default.png`;
+            console.log(character_photo);
+        }
+        
+
+// ************************************HPの更新******************************************************************
+//*********************攻撃フェーズ、ガードフェーズの際、この関数が使われる****************************** */
 function updateUI() {
-    document.getElementById('p1-Hp').style.width = Math.max(0, p1Hp) + "%";
-    document.getElementById('p2-Hp').style.width = Math.max(0, p2Hp) + "%";
+
+    //*******************************数値を一定の範囲に収めるのがMath.max***************************** */
+    //************************.style.widthでhtmlの横幅を書き換える */
+        document.getElementById('p1-Hp').style.width = Math.max(0, p1Hp) + "%";
+        document.getElementById('p2-Hp').style.width = Math.max(0, p2Hp) + "%";
+
+
+        document.getElementById('p1-Hp-text').textContent = Math.max(0,p1Hp);
+        document.getElementById('p2-Hp-text').textContent = Math.max(0,p2Hp);
+        console.log("プレイヤーのHPを調整");
+
 }
 
 
@@ -224,7 +300,8 @@ function updateUI() {
         //*それをcharacter_Imgに代入することで、ボタンとキャラクタに応じて写真を変更できる！/
 
 // キャラクター名の変数
-    const character_Name = document.getElementById('character_Name');
+    const character_Name = document.getElementById('character_Name').textContent;
+    console.log(character_Name);
 
 // ボタンのDOM
     var punch = document.getElementById('punch');
@@ -238,12 +315,14 @@ function updateUI() {
 
 /************************************************************************************************************************************/
 
-    var character_Img = document.getElementById('character.Img');
+    var character_photo = document.getElementById('character_Img');
 
-    function changeImage(motion){
+   function changeImage(motion){
         const fileName = `${character_Name}_${motion}.png`;
-        character_Img = fileName;
-    }
+        console.log(fileName);
+        character_photo.src = "images/character1/"+fileName;
+        console.log(character_photo.src);
+    } 
 
     // パンチの処理
     punch.addEventListener('click',function(){
@@ -264,7 +343,7 @@ function updateUI() {
     });
 
     // 技の処理
-    guard.addEventListener('click',function(){
+    waza.addEventListener('click',function(){
         changeImage('waza');
         console.log('waza');
     });
