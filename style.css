@@ -4,7 +4,11 @@
 /*あとでclassを揃える*/
 body {
     margin: 0;
-    background-color: black;
+    background-color: rgb(255, 255, 255);
+}
+
+button{
+  font-size: 100px;
 }
 
 .game {
@@ -21,3 +25,41 @@ body {
     );
   }
   
+  .character_photo_div{
+    width: 100px;
+    height: 100px;
+    background-color: #87ceeb;
+  }
+
+  .display_container{
+    display: flex;
+    justify-content: space-between;
+    background-color: #222;
+  }
+
+  .control_container{
+    display: flex;
+    background-color: #87ceeb;
+    justify-content: center;
+    height: 300px;
+  }
+
+  .hp-container{
+    display: flex;
+    justify-content: space-around;
+    font-size: 50px;
+    /* background-color: red; */
+  }
+
+      .hp-bar-outer_item{
+        background-color: green;
+      }
+
+    .msg_class{
+      width: 1000px;
+      font-size: 100px;
+      color: red;
+    }
+  /* HPバーの作成 */
+  /* shakeクラスを作成。震えるエフェクトのクラス*/
+  /* キャラクターの画像サイズを一定にしてほしい*/
