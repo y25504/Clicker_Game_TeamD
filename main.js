@@ -79,14 +79,17 @@ function enemyTurn() {
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
                     console.log('ガード失敗...');
-                    takeDamage(15); 
+                    takeDamage(10); 
+                }else {
+                    console.log('ガード成功');
+                    p2Hp -= 5;
                 }
             // p2.classList.remove('punch-anim');
                 updateUI();
                 finishTurn();
-        }, 1000); // 受付時間
+        }, 600); // 受付時間
 
-    }, 1500);// 敵の攻撃時間
+    }, 800);// 敵の攻撃時間
 }
 
 // **********************************ガードボタン読み取り************************/
@@ -94,7 +97,10 @@ function enemyTurn() {
         console.log("ガードボタンが押された");
         if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
             guardSuccess = true;
-            console.log("ガード成功！");
+            guard = false;
+        } else {
+            guardSuccess = false;
+            console.log("タイミング失敗");
         }
 });
 
