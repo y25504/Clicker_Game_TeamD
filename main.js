@@ -11,6 +11,7 @@ document.querySelector(".guard-menu").style.display = 'none';
 document.getElementById('msg').innerText = "攻撃フェーズ";
 
 
+
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
 
@@ -274,6 +275,30 @@ function updateUI() {
 
 
 
+// **************************マウス読み取り***************************************************
+// 画面全体（window）に対してマウスダウンイベントを監視
+// クリックされたら、変数に1を入れる
+window.addEventListener('mousedown', (event) => {
+
+
+    // ********breakdownはデブ相手に使う（崩し）***********************************
+switch (event.button) {
+    case 0:
+        let L_click = 1;
+        console.log("左クリックされました");
+    break;
+    case 1:
+        let C_click = 1;
+        console.log("ホイール（中央）クリックされました");
+
+    break;
+    case 2:
+        let R_click = 1;
+        console.log("右クリックされました");
+
+    break;
+}
+});
 
 
 
