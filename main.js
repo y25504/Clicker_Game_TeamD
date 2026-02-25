@@ -36,9 +36,30 @@ document.getElementById('msg').innerText = "攻撃フェーズ";
 function playerAttack(type) {
 
     // ボタン非表示
-    document.querySelector('.attack-menu_container').style.display = 'none';
+    // document.querySelector('.attack-menu_container').style.display = 'none';
+    let dmg = 0;
 
-    const dmg = type == 'punch' ? 100 :0;
+
+    switch (type){
+        case "punch":
+            console.log("パンチ");
+            if (enemy_Name == "whitekong"){
+                dmg = 100;
+            }
+            if (enemy_Name == "greendragon")
+                dmg = 0;
+            break;
+        case "kick":
+            console.log("キック");
+            if (enemy_Name == "whitekong"){
+                dmg = 0;
+            }
+            break;
+        case "breakdown":
+            console.log("崩し");
+            break;
+    }
+
 
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
@@ -49,6 +70,8 @@ function playerAttack(type) {
             finishTurn();
             // playerAttack関数を終わらせる
             return;
+        }else{
+            enemyTurn();
         }
 
         // setTimeout(() => {
@@ -299,7 +322,8 @@ switch (event.button) {
     break;
     case 2:
         console.log("右クリックされました");
-        playerAttack(kick);
+        changeImage_player('kick');
+        playerAttack("kick");
 
     break;
 }
