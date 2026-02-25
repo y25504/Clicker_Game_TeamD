@@ -38,9 +38,8 @@ function playerAttack(type) {
     // ボタン非表示
     document.querySelector('.attack-menu_container').style.display = 'none';
 
-    const dmg = type === 'punch' ? 10 : 20;
+    const dmg = type == 'punch' ? 100 :0;
 
-    setTimeout(() => {
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
         updateUI();
@@ -52,11 +51,11 @@ function playerAttack(type) {
             return;
         }
 
-        setTimeout(() => {
-            enemyTurn();    //敵のターンへ
-        }, 
-        1000);//秒数（ミリ秒）
-    },200);
+        // setTimeout(() => {
+        //     enemyTurn();    //敵のターンへ
+        // }, 
+        // 1000);//秒数（ミリ秒）
+
 }
 // **********************************************************************************************************************/
 
@@ -137,7 +136,7 @@ function finishTurn() {
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
-        alert("YOU WIN!");
+        NextTurn();
 
     //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
     }else if(p1Hp <= 0 && p2Hp <=0) {
@@ -155,6 +154,9 @@ function finishTurn() {
     console.log("次のターン開始");
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
+            p2Hp = 100;
+            updateUI();
+
             document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
             enemy_photo.src = `images/enemy1/${enemy_Name}_default.png`;
@@ -284,22 +286,29 @@ window.addEventListener('mousedown', (event) => {
     // ********breakdownはデブ相手に使う（崩し）***********************************
 switch (event.button) {
     case 0:
-        let L_click = 1;
         console.log("左クリックされました");
+        changeImage_player('punch');
+        playerAttack("punch");
+        
+
+
     break;
     case 1:
-        let C_click = 1;
         console.log("ホイール（中央）クリックされました");
 
     break;
     case 2:
-        let R_click = 1;
         console.log("右クリックされました");
+        playerAttack(kick);
 
     break;
 }
 });
 
+// 画面全体で右クリックメニュー（コンテキストメニュー）を禁止する
+window.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
 
 
 
