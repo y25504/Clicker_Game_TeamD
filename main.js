@@ -205,6 +205,27 @@ function updateUI() {
 
 
 
+// ***タイマー処理***************************************************************************
+
+let timeLeft = 4; // 残り時間
+const display = document.getElementById("timer_display");
+
+// 1000ミリ秒（1秒）ごとに実行
+const timerId = setInterval(() => {
+    timeLeft--; // 1秒減らす
+    // display.textContent = `残り時間: ${timeLeft}秒`;
+
+    if (timeLeft <= 0) {
+        clearInterval(timerId); // タイマーを止める
+        finishGame();           // 終了時の処理を呼び出す
+    }
+}, 1000);
+
+function finishGame() {
+    // display.textContent = "タイムアップ！";
+    console.log("ゲーム終了");
+    
+}
 
 
 
