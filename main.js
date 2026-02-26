@@ -7,7 +7,9 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
-// 最初に名前を設定することで、エラーを防！！
+let damage = 10;
+
+// 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
 
 
@@ -15,8 +17,8 @@ enemy_random();
 document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
-// todo ↓を動作させ、画像が反映されるようにする
 changeImage_enemy('default');
+
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
 
@@ -87,11 +89,6 @@ function playerAttack(type) {
             enemyTurn();
         }
 
-        // setTimeout(() => {
-        //     enemyTurn();    //敵のターンへ
-        // }, 
-        // 1000);//秒数（ミリ秒）
-
 }
 // **********************************************************************************************************************/
 
@@ -119,7 +116,7 @@ function enemyTurn() {
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
                     console.log('ガード失敗...');
-                    takeDamage(10); 
+                    takeDamage(damage); 
                 }else {
                     console.log('ガード成功');
                     p2Hp -= 5;
@@ -189,18 +186,19 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
-        var enemy_photo = document.getElementById('enemy_Img');
+        changeImage_enemy('motion');
 
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
+            p1Hp = 100;
             p2Hp = 100;
             updateUI();
-            enemy_random();
+            enemy_random('default');
             
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
-            enemy_photo.src = `images/${enemy_Name}/${enemy_Name}_default.png`;
+            changeImage_enemy(motion)
             console.log(character_photo);
         }
         
@@ -320,19 +318,17 @@ window.addEventListener('contextmenu', (event) => {
 
 
     //****************************************************敵のモーション(動作は上のモーションプログラムと同じ)******************************************/
-
-
-
-    // ! enemy_nameが未定義になっている
-    // ! enemy_photoが見えていない
     function changeImage_enemy(motion){
         var enemy_Name = document.getElementById("enemy_Name_item").textContent;
         var enemy_photo = document.getElementById('enemy_Img');
 
         
+        // ファイルの名前を指定
         console.log("enemy_Name: " + enemy_Name);
         const fileName = `${enemy_Name}_${motion}.png`;
         console.log(fileName);
+
+        // 上で決めた名前をsrcに入れる（ディレクトリを指定）
         enemy_photo.src = "images/" + enemy_Name + "/" +fileName;   
         console.log( "enemy_photo :" + enemy_photo.src);
     } 
