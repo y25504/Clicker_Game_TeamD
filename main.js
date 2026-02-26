@@ -7,11 +7,14 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
-let damage = 10;
+let damage = 100;
 let canAttack = true;
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
+
+// ボタン非表示
+document.querySelector('.attack-menu_container').style.display = 'none';
 
 
 
@@ -44,10 +47,8 @@ changeImage_enemy('default');
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
-    // ボタン非表示
-    // document.querySelector('.attack-menu_container').style.display = 'none';
 
-  
+    console.log('type');
 
     let dmg = 0;
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
@@ -77,6 +78,8 @@ function playerAttack(type) {
         case "breakdown":
             console.log("崩し");
             break;
+        default :
+        ("攻撃タイプが入力されていないエラー");
     }
 
 
@@ -172,7 +175,7 @@ function finishTurn() {
     if (p1Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
-        NextTurn();
+        restart();
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
@@ -193,13 +196,15 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
+
+    // ボタン非表示
+        document.querySelector('.attack-menu_container').style.display = 'none';
         
         canAttack = true;
-        changeImage_enemy('motion');
+        changeImage_enemy('default');
 
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
-            p1Hp = 100;
             p2Hp = 100;
             updateUI();
             enemy_random('default');
@@ -284,9 +289,9 @@ function updateUI() {
     console.log(character_Name_item);
 
 // ボタンのDOM
-    var punch = document.getElementById('punch');
-    var kick = document.getElementById('kick');
-    var guard = document.getElementById('guard');
+    // var punch = document.getElementById('punch');
+    // var kick = document.getElementById('kick');
+    // var guard = document.getElementById('guard');
 
 // 写真のDOM
     var character_punch = document.getElementById('character_punch');
@@ -362,4 +367,22 @@ function enemy_random(){
     }
 
 
+function restart(){
+    document.getElementById('msg').innerText = "やり直しますか？";
 
+    // ボタンを表示
+        document.querySelector('.attack-menu_container').style.display = 'block';
+
+            var yes = document.getElementById('yes');
+            var no = document.getElementById('no');
+
+        yes.addEventListener('click',function(){
+            console.log('yes');
+            p1Hp = 100;
+            NextTurn();
+    });
+    
+
+
+
+}

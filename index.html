@@ -11,7 +11,6 @@
     <!-- キャラクターネームを変数にして、切り替えができるようにしたい -->
     <div class="name_container">
         <h1 id="character_Name_item">Hatman</h1>
-        <!-- TODO 02/26 enemy_Name_itemのsrcをjavascのenemy_random関数から引っ張ってくる ok-->
         <h1 id="enemy_Name_item"></h1>
 
     </div>
@@ -42,7 +41,6 @@
             </div>
                     <div class="msg_class" id="msg"></div>
 
-                    <!-- TODO 02/26 enemy_Imgのsrcをjavascのenemy_random関数から引っ張ってくる -->
             <div class="enemy_Img_item">
                 <img id="enemy_Img" src="" alt="敵画像">
             </div>
@@ -54,8 +52,8 @@
     <!-- ***攻撃・防御メニュー********************************************************************* -->
     <div class="control_container">
         <div class="attack-menu_container">
-                    <button class="attack-button_item" id="punch">パンチ</button>
-                    <button class="attack-button_item" id="kick">キック</button>
+                    <button class="attack-button_item" id="no">☓</button>
+                    <button class="attack-button_item" id="yes">◯</button>
                     <button class="attack-button_item" id="waza">必殺技</button>
             </div>
             <div class="guard-menu">
@@ -63,9 +61,6 @@
             </div>
     </div>
     <!-- ******************************************************************************************** -->
-    
-
-
 
 
         <script src="main.js"></script>

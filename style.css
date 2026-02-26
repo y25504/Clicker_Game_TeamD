@@ -149,8 +149,8 @@ button {
   overflow: hidden;
 }
 
-#punch { background: #ff4444; color: white; box-shadow: 0 4px #991111; }
-#kick  { background: #ffbb00; color: white; box-shadow: 0 4px #997700; }
+#yes { background: #ff4444; color: white; box-shadow: 0 4px #991111; }
+#no  { background: #ffbb00; color: white; box-shadow: 0 4px #997700; }
 #waza  { background: #aa00ff; color: white; box-shadow: 0 4px #550088; }
 #guard { background: #0088ff; color: white; box-shadow: 0 4px #004488; margin-left: 20px; }
 
