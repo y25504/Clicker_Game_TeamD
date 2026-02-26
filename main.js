@@ -8,9 +8,11 @@ let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
 let damage = 10;
+let canAttack = true;
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
+
 
 
 // １回目の攻撃フェーズで、ガードボタンを無効化
@@ -42,9 +44,11 @@ changeImage_enemy('default');
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
-
     // ボタン非表示
     // document.querySelector('.attack-menu_container').style.display = 'none';
+
+  
+
     let dmg = 0;
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
@@ -99,6 +103,9 @@ function playerAttack(type) {
 function enemyTurn() {
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
+
+      // マウスクリック無効化
+        canAttack = false;
 
     //*******敵のモーションプログラム(punch,kick,wazaの中からランダムで)************************************************ */
     //*******motionsの配列をいじることで、技が出る確率を調整できる* */
@@ -186,6 +193,8 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
+        
+        canAttack = true;
         changeImage_enemy('motion');
 
         // メッセージを攻撃フェーズに直す
@@ -198,7 +207,6 @@ function finishTurn() {
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
-            changeImage_enemy(motion)
             console.log(character_photo);
         }
         
@@ -222,38 +230,42 @@ function updateUI() {
 
 
 // **************************マウス読み取り***************************************************
+// ! **************************eventlistner何回も呼び出すと連打バグの原因になる!!!!*******
 // 画面全体（window）に対してマウスダウンイベントを監視
 // クリックされたら、変数に1を入れる
-window.addEventListener('mousedown', (event) => {
 
+    window.addEventListener('mousedown', (event) => {
+        // ********breakdownはデブ相手に使う（崩し）***********************************
+        // クリックを許可するか否か
+            if (!canAttack)
+                return;
 
-    // ********breakdownはデブ相手に使う（崩し）***********************************
-switch (event.button) {
-    case 0:
-        console.log("左クリックされました");
-        changeImage_player('punch');
-        playerAttack("punch");
-        
-    break;
-    case 1:
-        console.log("ホイール（中央）クリックされました");
+                switch (event.button) {
+                    case 0:
+                        console.log("左クリックされました");
+                        // クリックされたら、それ以降のクリックを無効化、連打を防止する
+                        changeImage_player('punch');
+                        playerAttack("punch");
+                        
+                    break;
+                    case 1:
+                        console.log("ホイール（中央）クリックされました");
 
-    break;
-    case 2:
-        console.log("右クリックされました");
-        changeImage_player('kick');
-        playerAttack("kick");
+                    break;
+                    case 2:
+                        console.log("右クリックされました");
+                        changeImage_player('kick');
+                        playerAttack("kick");
 
-    break;
-}
-});
+                    break;
+                }
 
-// 画面全体で右クリックメニュー（コンテキストメニュー）を禁止する
-window.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-});
+    });
 
-
+    // 画面全体で右クリックメニュー（コンテキストメニュー）を禁止する
+    window.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
 
 // オイカワの担当場所(date:02/16)
 // **************************************モーションプログラム****************************************************************//
