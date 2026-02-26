@@ -1,4 +1,6 @@
 
+//************************************************初期設定ゾーン************************************* */
+
 //プレイヤーHPの作成
 let p1Hp = 100;
 let p2Hp = 100;
@@ -9,9 +11,9 @@ let guardSuccess = false;   //　ガードに成功したか
 document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
-
-
-
+// todo ↓を動作させ、画像が反映されるようにする
+enemy_random();
+changeImage_enemy('default');
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
 
@@ -28,6 +30,7 @@ document.getElementById('msg').innerText = "攻撃フェーズ";
             playerAttack(type); // 関数を実行
         });
     });
+//************************************************************************************************ */
 
 
 //****************************************************プレイヤー攻撃フェーズ****************************************** */
@@ -40,6 +43,9 @@ function playerAttack(type) {
     let dmg = 0;
 
 
+    // **********************************************白コングにはパンチが効く
+    //***********************************************緑ドラゴンにはキックが効く */
+    //***********************************************追加キャラには崩しが効く */
     switch (type){
         case "punch":
             console.log("パンチ");
@@ -53,6 +59,9 @@ function playerAttack(type) {
             console.log("キック");
             if (enemy_Name == "whitekong"){
                 dmg = 0;
+            }
+            if (enemy_Name == "greendragon"){
+                dmg = 100;
             }
             break;
         case "breakdown":
@@ -205,29 +214,6 @@ function updateUI() {
 
 
 
-// ***タイマー処理***************************************************************************
-
-let timeLeft = 4; // 残り時間
-const display = document.getElementById("timer_display");
-
-// 1000ミリ秒（1秒）ごとに実行
-const timerId = setInterval(() => {
-    timeLeft--; // 1秒減らす
-    // display.textContent = `残り時間: ${timeLeft}秒`;
-
-    if (timeLeft <= 0) {
-        clearInterval(timerId); // タイマーを止める
-        finishGame();           // 終了時の処理を呼び出す
-    }
-}, 1000);
-
-function finishGame() {
-    // display.textContent = "タイムアップ！";
-    console.log("ゲーム終了");
-    
-}
-
-
 
 
 
@@ -334,8 +320,6 @@ switch (event.button) {
         changeImage_player('punch');
         playerAttack("punch");
         
-
-
     break;
     case 1:
         console.log("ホイール（中央）クリックされました");
@@ -424,9 +408,53 @@ window.addEventListener('contextmenu', (event) => {
     var enemy_photo = document.getElementById('enemy_Img');
 
 
+    // ! enemy_nameが未定義になっている
     function changeImage_enemy(motion){
+        console.log(enemy_Name);
         const fileName = `${enemy_Name}_${motion}.png`;
         console.log(fileName);
         enemy_photo.src = "images/" + enemy_Name + "/" +fileName;
         console.log(enemy_photo.src);
     } 
+
+
+//     // ***タイマー処理***************************************************************************
+
+// let timeLeft = 4; // 残り時間
+// const display = document.getElementById("timer_display");
+
+// // 1000ミリ秒（1秒）ごとに実行
+// const timerId = setInterval(() => {
+//     timeLeft--; // 1秒減らす
+//     // display.textContent = `残り時間: ${timeLeft}秒`;
+
+//     if (timeLeft <= 0) {
+//         clearInterval(timerId); // タイマーを止める
+//         finishGame();           // 終了時の処理を呼び出す
+//     }
+// }, 1000);
+
+// function finishGame() {
+//     // display.textContent = "タイムアップ！";
+//     console.log("ゲーム終了");
+    
+// }
+
+
+// ****************************敵をランダムに変更する処理*****************************
+function enemy_random(){
+    // 1. 名前のリスト
+    const enemies = ["whitekong", "greendragon"];
+
+    // 2. ランダムに1つ選ぶ
+    const randomName = enemies[Math.floor(Math.random() * enemies.length)];
+
+    // 3. 画面の中身を書き換える
+    console.log("敵の名前" + randomName);
+    document.getElementById("enemy_Name_item").textContent = randomName;
+    // todo defaultのところにモーションを持ってくる
+    document.getElementById("enemy_Img").src = `images/${randomName}/${randomName}_default.png`;
+    }
+
+
+
