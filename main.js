@@ -7,12 +7,15 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+// 最初に名前を設定することで、エラーを防！！
+enemy_random();
+
+
 // １回目の攻撃フェーズで、ガードボタンを無効化
 document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
 // todo ↓を動作させ、画像が反映されるようにする
-enemy_random();
 changeImage_enemy('default');
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
@@ -41,6 +44,7 @@ function playerAttack(type) {
     // ボタン非表示
     // document.querySelector('.attack-menu_container').style.display = 'none';
     let dmg = 0;
+        enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
 
     // **********************************************白コングにはパンチが効く
@@ -143,7 +147,6 @@ function enemyTurn() {
 function takeDamage(dmg){
     p1Hp -= dmg;
         console.log("P1 HP :"+p1Hp);
-
 }
 // **************************************************************************************************************************
 
@@ -152,6 +155,7 @@ function takeDamage(dmg){
 
 function finishTurn() {
     setTimeout(() => {
+        enemy_random();
     //UIをプレイヤー攻撃に切り替え
         document.querySelector(".guard-menu").style.display = 'none';
         console.log('ガードメニューを非表示');
@@ -164,6 +168,7 @@ function finishTurn() {
     if (p1Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
+        NextTurn();
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
@@ -184,10 +189,14 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
+        var enemy_photo = document.getElementById('enemy_Img');
+
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
             p2Hp = 100;
             updateUI();
+            enemy_random();
+            
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
@@ -211,99 +220,6 @@ function updateUI() {
         console.log("プレイヤーのHPを調整");
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -404,41 +320,22 @@ window.addEventListener('contextmenu', (event) => {
 
 
     //****************************************************敵のモーション(動作は上のモーションプログラムと同じ)******************************************/
-    var enemy_Name = document.getElementById("enemy_Name_item").textContent;
-    var enemy_photo = document.getElementById('enemy_Img');
+
 
 
     // ! enemy_nameが未定義になっている
+    // ! enemy_photoが見えていない
     function changeImage_enemy(motion){
-        console.log(enemy_Name);
+        var enemy_Name = document.getElementById("enemy_Name_item").textContent;
+        var enemy_photo = document.getElementById('enemy_Img');
+
+        
+        console.log("enemy_Name: " + enemy_Name);
         const fileName = `${enemy_Name}_${motion}.png`;
         console.log(fileName);
-        enemy_photo.src = "images/" + enemy_Name + "/" +fileName;
-        console.log(enemy_photo.src);
+        enemy_photo.src = "images/" + enemy_Name + "/" +fileName;   
+        console.log( "enemy_photo :" + enemy_photo.src);
     } 
-
-
-//     // ***タイマー処理***************************************************************************
-
-// let timeLeft = 4; // 残り時間
-// const display = document.getElementById("timer_display");
-
-// // 1000ミリ秒（1秒）ごとに実行
-// const timerId = setInterval(() => {
-//     timeLeft--; // 1秒減らす
-//     // display.textContent = `残り時間: ${timeLeft}秒`;
-
-//     if (timeLeft <= 0) {
-//         clearInterval(timerId); // タイマーを止める
-//         finishGame();           // 終了時の処理を呼び出す
-//     }
-// }, 1000);
-
-// function finishGame() {
-//     // display.textContent = "タイムアップ！";
-//     console.log("ゲーム終了");
-    
-// }
 
 
 // ****************************敵をランダムに変更する処理*****************************
