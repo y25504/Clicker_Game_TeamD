@@ -182,7 +182,7 @@ function finishTurn() {
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
-            enemy_photo.src = `images/enemy1/${enemy_Name}_default.png`;
+            enemy_photo.src = `images/${enemy_Name}/${enemy_Name}_default.png`;
             console.log(character_photo);
         }
         
@@ -427,6 +427,6 @@ window.addEventListener('contextmenu', (event) => {
     function changeImage_enemy(motion){
         const fileName = `${enemy_Name}_${motion}.png`;
         console.log(fileName);
-        enemy_photo.src = "images/enemy1/"+fileName;
+        enemy_photo.src = "images/" + enemy_Name + "/" +fileName;
         console.log(enemy_photo.src);
     } 
