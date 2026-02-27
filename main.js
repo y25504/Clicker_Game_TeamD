@@ -1,13 +1,52 @@
 
+//************************************************初期設定ゾーン************************************* */
+
 //プレイヤーHPの作成
 let p1Hp = 100;
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+let enemy_damage = 50;
+let canAttack = true;
+
+var yes = document.getElementById('yes');
+var no = document.getElementById('no');
+
+// 最初に名前を設定することで、nullエラーを防ぐ！！
+enemy_random();
+
+if (yes) {
+    yes.addEventListener('click', () => {
+        if (document.getElementById('msg').innerText = "やり直しますか？") {
+            console.log('リスタート確定');
+
+            // hpを回復させる
+            p1Hp = 100;
+            p2Hp = 100;
+
+            updateUI();
+            canAttack = true; // 攻撃許可を戻す
+            enemy_random();
+            changeImage_enemy('default');
+            document.getElementById('msg').innerText = "攻撃フェーズ";
+            // 攻撃メニューを表示、ガードメニューを隠す
+            document.querySelector(".attack-menu_container").style.display = 'block';
+            document.querySelector(".guard-menu").style.display = 'none';
+        }
+    });
+}
+
+// ボタン非表示
+document.querySelector('.attack-menu_container').style.display = 'none';
+
+
+
+// １回目の攻撃フェーズで、ガードボタンを無効化
+document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
-
+changeImage_enemy('default');
 
 // button class attack-buttonのdomを取得
     const attackButtons = document.querySelectorAll(".attack-button_item");
@@ -25,7 +64,7 @@ document.getElementById('msg').innerText = "攻撃フェーズ";
             playerAttack(type); // 関数を実行
         });
     });
-
+//************************************************************************************************ */
 
 
 //****************************************************プレイヤー攻撃フェーズ****************************************** */
@@ -33,26 +72,51 @@ document.getElementById('msg').innerText = "攻撃フェーズ";
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
 
-    // ボタン非表示
-    document.querySelector('.attack-menu_container').style.display = 'none';
+    console.log('type');
 
-    const dmg = type === 'punch' ? 10 : 20;
-    // 画像の切り替えは下のモーション関数で行うので、なくてもいいかなあ:::::::::::::::::::::::::::::::::::::::::::::::///
-    // const anim = type === 'punch' ? 'punch-anim' : 'kick-anim';
+    let dmg = 0;
+        enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
-    // const p1 = document.getElementById('p1');
-    // p1.classList.add(anim);
-    //GUIDE::::::::::::::::::::::setTimeout(() => { 処理 }, ミリ秒);
-    setTimeout(() => {
+
+    // **********************************************白コングにはパンチが効く
+    //***********************************************緑ドラゴンにはキックが効く */
+    //***********************************************追加キャラには崩しが効く */
+    switch (type){
+        case "punch":
+            console.log("パンチ");
+            if (enemy_Name == "whitekong"){
+                dmg = 10;
+            }
+            if (enemy_Name == "greendragon")
+                dmg = 5;
+            break;
+        case "kick":
+            console.log("キック");
+            if (enemy_Name == "whitekong"){
+                dmg = 5;
+            }
+            if (enemy_Name == "greendragon"){
+                dmg = 10;
+            }
+            break;
+        default :
+        ("攻撃タイプが入力されていないエラー");
+    }
+
+
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
         updateUI();
+        
+        // 敵HPが0以下になったら、勝敗判定の関数を呼び出す
+        if(p2Hp <= 0){
+            finishTurn();
+            // playerAttack関数を終わらせる
+            return;
+        }else{
+            enemyTurn();
+        }
 
-        setTimeout(() => {
-            enemyTurn();    //敵のターンへ
-        }, 
-        1000);//秒数（ミリ秒）
-    },200);
 }
 // **********************************************************************************************************************/
 
@@ -62,15 +126,19 @@ function playerAttack(type) {
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
     document.getElementById('msg').innerText = "敵のフェーズ";
-
     document.querySelector('.guard-menu').style.display = 'block';
 
-    // const p2 = document.getElementById('p2');
+      // マウスクリック無効化
+        canAttack = false;
+
+    //*******敵のモーションプログラム(punch,kick,wazaの中からランダムで)************************************************ */
+    //*******motionsの配列をいじることで、技が出る確率を調整できる* */
+        const motions = ['punch', 'kick', 'waza'];
+        const randomIndex = Math.floor(Math.random() * motions.length);
+        changeImage_enemy(motions[randomIndex]);
 
     setTimeout(() => {
-        // モーションは下のプログラムで行うのでいらないかなあ::::::::::::::::::::::::::::::::::::::::::::::::
-        // p2.classList.add('punch-anim'); // 敵の攻撃始動
-        // プレイヤーの準備時間が1000ms
+
         Guard = true;
         guardSuccess = false;
 
@@ -79,7 +147,7 @@ function enemyTurn() {
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
                     console.log('ガード失敗...');
-                    takeDamage(10); 
+                    takeDamage(enemy_damage); 
                 }else {
                     console.log('ガード成功');
                     p2Hp -= 5;
@@ -107,30 +175,9 @@ function enemyTurn() {
 function takeDamage(dmg){
     p1Hp -= dmg;
         console.log("P1 HP :"+p1Hp);
-
 }
 // **************************************************************************************************************************
 
-
-
-
-// function attemptGuard() {
-//     if (isGuardWindowOpen) {
-//       guardSuccess = true;
-//       isGuardWindowOpen = false; // 二度押し防止
-//       document.getElementById('msg').innerText = "ガード成功！反撃！";
-      
-//       // 反撃演出
-//       const p1 = document.getElementById('p1');
-//       p1.classList.add('counter-flash');
-//       p2Hp -= 15; // 敵にダメージ
-//       updateUI();
-      
-//       setTimeout(() => p1.classList.remove('counter-flash'), 200);
-//     } else {
-//       document.getElementById('msg').innerText = "ガード失敗！";
-//     }
-//   }
 
 // ************************************フェーズ終了************************************************************************//
 
@@ -148,16 +195,20 @@ function finishTurn() {
     if (p1Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
+        restart();
+        return;
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
-        alert("YOU WIN!");
+        NextTurn();
+        return;
 
     //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
     }else if(p1Hp <= 0 && p2Hp <=0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("DRAW");
+        return;
     //次のターンへ
     }else {
         NextTurn();
@@ -168,10 +219,20 @@ function finishTurn() {
 
     function NextTurn(){
     console.log("次のターン開始");
+
+    // ボタン非表示
+        document.querySelector('.attack-menu_container').style.display = 'none';
+        
+        canAttack = true;
+        changeImage_enemy('default');
+
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
+            updateUI();
+            
+
             document.getElementById('msg').innerText = "攻撃フェーズ";
-            character_photo.src = `images/character1/${character_Name}_default.png`;
+            character_photo.src = `images/character1/${character_Name_item}_default.png`;
             console.log(character_photo);
         }
         
@@ -194,104 +255,43 @@ function updateUI() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// **************************マウス読み取り***************************************************
+// ! **************************eventlistner何回も呼び出すと連打バグの原因になる!!!!*******
+// 画面全体（window）に対してマウスダウンイベントを監視
+// クリックされたら、変数に1を入れる
+
+    window.addEventListener('mousedown', (event) => {
+        // ********breakdownはデブ相手に使う（崩し）***********************************
+        // クリックを許可するか否か
+            if (!canAttack)
+                return;
+
+                switch (event.button) {
+                    case 0:
+                        console.log("左クリックされました");
+                        // クリックされたら、それ以降のクリックを無効化、連打を防止する
+                        changeImage_player('punch');
+                        playerAttack("punch");
+                        
+                    break;
+                    case 1:
+                        console.log("ホイール（中央）クリックされました");
+
+                    break;
+                    case 2:
+                        console.log("右クリックされました");
+                        changeImage_player('kick');
+                        playerAttack("kick");
+
+                    break;
+                }
+
+    });
+
+    // 画面全体で右クリックメニュー（コンテキストメニュー）を禁止する
+    window.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
 
 // オイカワの担当場所(date:02/16)
 // **************************************モーションプログラム****************************************************************//
@@ -301,18 +301,18 @@ function updateUI() {
 //****画像表示のdomは、character_Img　とする。 */
 
 //*使用する関数について */
-//*changeImage*****//
-//***fileNameに、character_Name_とmotionを組み合わせた名前を代入 */
+//*changeImage_player*****//
+//***fileNameに、character_Name_item_とmotionを組み合わせた名前を代入 */
         //*それをcharacter_Imgに代入することで、ボタンとキャラクタに応じて写真を変更できる！/
 
 // キャラクター名の変数
-    const character_Name = document.getElementById('character_Name').textContent;
-    console.log(character_Name);
+    const character_Name_item = document.getElementById('character_Name_item').textContent;
+    console.log(character_Name_item);
 
 // ボタンのDOM
-    var punch = document.getElementById('punch');
-    var kick = document.getElementById('kick');
-    var guard = document.getElementById('guard');
+    // var punch = document.getElementById('punch');
+    // var kick = document.getElementById('kick');
+    // var guard = document.getElementById('guard');
 
 // 写真のDOM
     var character_punch = document.getElementById('character_punch');
@@ -323,8 +323,8 @@ function updateUI() {
 
     var character_photo = document.getElementById('character_Img');
 
-   function changeImage(motion){
-        const fileName = `${character_Name}_${motion}.png`;
+    function changeImage_player(motion){
+        const fileName = `${character_Name_item}_${motion}.png`;
         console.log(fileName);
         character_photo.src = "images/character1/"+fileName;
         console.log(character_photo.src);
@@ -332,27 +332,65 @@ function updateUI() {
 
     // パンチの処理
     punch.addEventListener('click',function(){
-        changeImage('punch');
+        changeImage_player('punch');
         console.log('punch');
     });
 
     // キックの処理
     kick.addEventListener('click',function(){
-        changeImage('kick');
+        changeImage_player('kick');
         console.log('kick');
     });
 
     // ガードの処理
     guard.addEventListener('click',function(){
-        changeImage('guard');
+        changeImage_player('guard');
         console.log('guard');
     });
 
     // 技の処理
     waza.addEventListener('click',function(){
-        changeImage('waza');
+        changeImage_player('waza');
         console.log('waza');
     });
 
 
+    //****************************************************敵のモーション(動作は上のモーションプログラムと同じ)******************************************/
+    function changeImage_enemy(motion){
+        var enemy_Name = document.getElementById("enemy_Name_item").textContent;
+        var enemy_photo = document.getElementById('enemy_Img');
 
+        
+        // ファイルの名前を指定
+        console.log("enemy_Name: " + enemy_Name);
+        const fileName = `${enemy_Name}_${motion}.png`;
+        console.log(fileName);
+
+        // 上で決めた名前をsrcに入れる（ディレクトリを指定）
+        enemy_photo.src = "images/" + enemy_Name + "/" +fileName;   
+        console.log( "enemy_photo :" + enemy_photo.src);
+    } 
+
+
+// ****************************敵をランダムに変更する処理*****************************
+function enemy_random(){
+    // 1. 名前のリスト
+    const enemies = ["whitekong", "greendragon"];
+
+    // 2. ランダムに1つ選ぶ
+    const randomName = enemies[Math.floor(Math.random() * enemies.length)];
+
+    // 3. 画面の中身を書き換える
+    console.log("敵の名前" + randomName);
+    document.getElementById("enemy_Name_item").textContent = randomName;
+    // todo defaultのところにモーションを持ってくる
+    document.getElementById("enemy_Img").src = `images/${randomName}/${randomName}_default.png`;
+    }
+
+
+function restart(){
+    console.log("");
+    document.getElementById('msg').innerText = "やり直しますか？";
+    // ボタンを表示
+        document.querySelector('.attack-menu_container').style.display = 'block';
+}
