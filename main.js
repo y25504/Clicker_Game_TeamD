@@ -13,12 +13,17 @@ let canAttack = true;
 var yes = document.getElementById('yes');
 var no = document.getElementById('no');
 
+
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
 
+
+
+// *******************************************リスタートの読み取り*************************************/
+// ボタンyesがあるかどうか確認
     if (yes) {
         yes.addEventListener('click', () => {
-            if (document.getElementById('msg').innerText === "やり直しますか？") {
+            if (document.getElementById('msg').innerText == "やり直しますか？") {
                 console.log('リスタート確定');
 
                     // hpを回復させる
@@ -36,6 +41,8 @@ enemy_random();
             }
         });
     }
+    
+
 
 
 // ボタン非表示
@@ -49,8 +56,6 @@ document.querySelector(".guard-menu").style.display = 'none';
 document.getElementById('msg').innerText = "攻撃フェーズ";
 changeImage_enemy('default');
 
-// button class attack-buttonのdomを取得
-    const attackButtons = document.querySelectorAll(".attack-button_item");
 
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
@@ -388,9 +393,12 @@ function enemy_random(){
 
 
     // ***************************リスタート処理*******************************************
+    
+
 function restart(){
     console.log("リスタート");
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
 }
+
