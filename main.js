@@ -81,11 +81,15 @@ function playerAttack(type) {
     switch (type){
         case "punch":
             console.log("パンチ");
-            if (enemy_Name == "whitekong"){
+            if (enemy_Name == "whitekong")
                 dmg = 10;
-            }
+            
             if (enemy_Name == "greendragon")
                 dmg = 5;
+
+            if (enemy_Name == "death")
+                dmg = 10;
+
             break;
         case "kick":
             console.log("キック");
@@ -376,7 +380,7 @@ function updateUI() {
 // ****************************敵をランダムに変更する処理*****************************
 function enemy_random(){
     // 1. 名前のリスト
-    const enemies = ["whitekong", "greendragon"];
+    const enemies = ["whitekong", "greendragon","death"];
 
     // 2. ランダムに1つ選ぶ
     const randomName = enemies[Math.floor(Math.random() * enemies.length)];
