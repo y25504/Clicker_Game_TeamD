@@ -10,8 +10,32 @@ let guardSuccess = false;   //　ガードに成功したか
 let damage = 100;
 let canAttack = true;
 
+var yes = document.getElementById('yes');
+var no = document.getElementById('no');
+
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
+
+if (yes) {
+    yes.addEventListener('click', () => {
+        if (document.getElementById('msg').innerText = "やり直しますか？") {
+            console.log('リスタート確定');
+
+            // hpを回復させる
+            p1Hp = 100;
+            p2Hp = 100;
+
+            updateUI();
+            canAttack = true; // 攻撃許可を戻す
+            enemy_random();
+            changeImage_enemy('default');
+            document.getElementById('msg').innerText = "攻撃フェーズ";
+            // 攻撃メニューを表示、ガードメニューを隠す
+            document.querySelector(".attack-menu_container").style.display = 'block';
+            document.querySelector(".guard-menu").style.display = 'none';
+        }
+    });
+}
 
 // ボタン非表示
 document.querySelector('.attack-menu_container').style.display = 'none';
@@ -176,16 +200,19 @@ function finishTurn() {
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
         restart();
+        return;
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
         document.getElementById('msg').innerText = "K.O.";
         NextTurn();
+        return;
 
     //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
     }else if(p1Hp <= 0 && p2Hp <=0) {
         document.getElementById('msg').innerText = "K.O.";
         alert("DRAW");
+        return;
     //次のターンへ
     }else {
         NextTurn();
@@ -373,16 +400,7 @@ function restart(){
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
 
-            var yes = document.getElementById('yes');
-            var no = document.getElementById('no');
-
-        yes.addEventListener('click',function(){
-            console.log('yes');
-            p1Hp = 100;
-            NextTurn();
-    });
-    
 
 
-
+ 
 }
