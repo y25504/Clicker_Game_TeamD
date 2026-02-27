@@ -16,26 +16,27 @@ var no = document.getElementById('no');
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
 
-if (yes) {
-    yes.addEventListener('click', () => {
-        if (document.getElementById('msg').innerText = "やり直しますか？") {
-            console.log('リスタート確定');
+    if (yes) {
+        yes.addEventListener('click', () => {
+            if (document.getElementById('msg').innerText === "やり直しますか？") {
+                console.log('リスタート確定');
 
-            // hpを回復させる
-            p1Hp = 100;
-            p2Hp = 100;
+                    // hpを回復させる
+                    p1Hp = 100;
+                    p2Hp = 100;
 
-            updateUI();
-            canAttack = true; // 攻撃許可を戻す
-            enemy_random();
-            changeImage_enemy('default');
-            document.getElementById('msg').innerText = "攻撃フェーズ";
-            // 攻撃メニューを表示、ガードメニューを隠す
-            document.querySelector(".attack-menu_container").style.display = 'block';
-            document.querySelector(".guard-menu").style.display = 'none';
-        }
-    });
-}
+                updateUI();
+                canAttack = true; // 攻撃許可を戻す
+                enemy_random();
+                changeImage_enemy('default');
+                document.getElementById('msg').innerText = "攻撃フェーズ";
+                // 攻撃メニューを表示、ガードメニューを隠す
+                document.querySelector(".attack-menu_container").style.display = 'block';
+                document.querySelector(".guard-menu").style.display = 'none';
+            }
+        });
+    }
+
 
 // ボタン非表示
 document.querySelector('.attack-menu_container').style.display = 'none';
@@ -54,16 +55,6 @@ changeImage_enemy('default');
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
 
-// 各ボタンにクリックイベントを設定
-// forEach - 
-    attackButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log('ボタン押されました');
-            const type = button.id; // 'punch' か 'kick' を取得
-            console.log(type);
-            playerAttack(type); // 関数を実行
-        });
-    });
 //************************************************************************************************ */
 
 
@@ -71,8 +62,9 @@ changeImage_enemy('default');
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
+    console.log("攻撃ターン");
 
-    console.log('type');
+    console.log(type);
 
     let dmg = 0;
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
@@ -125,6 +117,7 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+    console.log("ガードフェーズ");
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
 
@@ -173,6 +166,7 @@ function enemyTurn() {
 });
 
 function takeDamage(dmg){
+    console.log("被ダメージ計算");
     p1Hp -= dmg;
         console.log("P1 HP :"+p1Hp);
 }
@@ -182,6 +176,7 @@ function takeDamage(dmg){
 // ************************************フェーズ終了************************************************************************//
 
 function finishTurn() {
+    console.log("ターンエンド");
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
         document.querySelector(".guard-menu").style.display = 'none';
@@ -240,6 +235,7 @@ function finishTurn() {
 // ************************************HPの更新******************************************************************
 //*********************攻撃フェーズ、ガードフェーズの際、この関数が使われる****************************** */
 function updateUI() {
+    console.log("UIの更新");
 
     //*******************************数値を一定の範囲に収めるのがMath.max***************************** */
     //************************.style.widthでhtmlの横幅を書き換える */
@@ -388,8 +384,12 @@ function enemy_random(){
     }
 
 
+
+
+
+    // ***************************リスタート処理*******************************************
 function restart(){
-    console.log("");
+    console.log("リスタート");
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
