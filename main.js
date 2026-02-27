@@ -7,7 +7,7 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
-let damage = 100;
+let enemy_damage = 50;
 let canAttack = true;
 
 var yes = document.getElementById('yes');
@@ -85,22 +85,19 @@ function playerAttack(type) {
         case "punch":
             console.log("パンチ");
             if (enemy_Name == "whitekong"){
-                dmg = 100;
+                dmg = 10;
             }
             if (enemy_Name == "greendragon")
-                dmg = 0;
+                dmg = 5;
             break;
         case "kick":
             console.log("キック");
             if (enemy_Name == "whitekong"){
-                dmg = 0;
+                dmg = 5;
             }
             if (enemy_Name == "greendragon"){
-                dmg = 100;
+                dmg = 10;
             }
-            break;
-        case "breakdown":
-            console.log("崩し");
             break;
         default :
         ("攻撃タイプが入力されていないエラー");
@@ -150,7 +147,7 @@ function enemyTurn() {
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
                     console.log('ガード失敗...');
-                    takeDamage(damage); 
+                    takeDamage(enemy_damage); 
                 }else {
                     console.log('ガード成功');
                     p2Hp -= 5;
@@ -186,7 +183,6 @@ function takeDamage(dmg){
 
 function finishTurn() {
     setTimeout(() => {
-        enemy_random();
     //UIをプレイヤー攻撃に切り替え
         document.querySelector(".guard-menu").style.display = 'none';
         console.log('ガードメニューを非表示');
@@ -232,9 +228,7 @@ function finishTurn() {
 
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
-            p2Hp = 100;
             updateUI();
-            enemy_random('default');
             
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
@@ -395,12 +389,8 @@ function enemy_random(){
 
 
 function restart(){
+    console.log("");
     document.getElementById('msg').innerText = "やり直しますか？";
-
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
-
-
-
- 
 }
