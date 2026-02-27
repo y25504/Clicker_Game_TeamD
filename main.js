@@ -82,15 +82,18 @@ function playerAttack(type) {
         case "punch":
             console.log("パンチ");
             if (enemy_Name == "whitekong")
-                dmg = 10;
+                dmg = 20;
             
+
             if (enemy_Name == "greendragon")
                 dmg = 5;
 
+
             if (enemy_Name == "death")
-                dmg = 10;
+                dmg = 50;
 
             break;
+
         case "kick":
             console.log("キック");
             if (enemy_Name == "whitekong"){
@@ -99,6 +102,10 @@ function playerAttack(type) {
             if (enemy_Name == "greendragon"){
                 dmg = 10;
             }
+            if (enemy_Name == "death"){
+                dmg = 35;
+            }
+
             break;
         default :
         ("攻撃タイプが入力されていないエラー");
@@ -204,7 +211,7 @@ function finishTurn() {
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
-        document.getElementById('msg').innerText = "K.O.";
+        document.getElementById('msg').innerText = "K.O.";  
         NextTurn();
         return;
 
@@ -213,6 +220,7 @@ function finishTurn() {
         document.getElementById('msg').innerText = "K.O.";
         alert("DRAW");
         return;
+
     //次のターンへ
     }else {
         NextTurn();
@@ -228,7 +236,10 @@ function finishTurn() {
         document.querySelector('.attack-menu_container').style.display = 'none';
         
         canAttack = true;
+        enemy_random();
         changeImage_enemy('default');
+
+        p2Hp = 100;
 
         // メッセージを攻撃フェーズに直す
         // キャラクタの画像を通常に戻す
@@ -240,6 +251,8 @@ function finishTurn() {
             console.log(character_photo);
         }
         
+
+
 
 // ************************************HPの更新******************************************************************
 //*********************攻撃フェーズ、ガードフェーズの際、この関数が使われる****************************** */
@@ -261,7 +274,6 @@ function updateUI() {
 
 
 // **************************マウス読み取り***************************************************
-// ! **************************eventlistner何回も呼び出すと連打バグの原因になる!!!!*******
 // 画面全体（window）に対してマウスダウンイベントを監視
 // クリックされたら、変数に1を入れる
 
