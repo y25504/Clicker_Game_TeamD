@@ -190,7 +190,7 @@ function playerAttack(type) {
 
 
     if(fever_flag){
-        // フィーバー中はどの攻撃(パンチ)でも特大ダメージ
+        // フィーバー中はどの攻撃でも特大ダメージ
         dmg = 100; 
         sound("sounds/fever_punch.mp3");
     }else{
@@ -206,11 +206,11 @@ function playerAttack(type) {
                 
 
                 if (enemy_Name == "greendragon")
-                    dmg*= 0;
+                    dmg*= 1;
 
 
                 if (enemy_Name == "death")
-                    dmg*= 0;
+                    dmg*= 1;
 
                 break;
 
@@ -218,20 +218,28 @@ function playerAttack(type) {
                 sound("sounds/kick.mp3");
                 console.log("キック");
                 if (enemy_Name == "whitekong"){
-                    dmg*= 0;
+                    dmg*= 1;
                 }
                 if (enemy_Name == "greendragon"){
                     dmg*= 10;
                 }
                 if (enemy_Name == "death"){
-                    dmg*= 10;
+                    dmg*= 1;
                 }
 
                 break;
 
-            case "fever":
-                dmg*10;
-                break;
+            case "waza":
+                console.log("技");
+                if (enemy_Name == "whitekong"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "greendragon"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "death"){
+                    dmg*= 10;
+                }
 
             default :
             ("攻撃タイプが入力されていないエラー");
@@ -377,17 +385,6 @@ function finishTurn() {
         // 勝数に加算
         win_count++;
         console.log("win_count :"+ win_count);
-
-        // // クリア判定
-        //     if(win_count == clear_count){
-        //         console.log("クリア処理");
-        //         sound("sounds/handcrap.mp3");
-        //         document.getElementById("waza").style.display = 'none';
-
-        //         document.getElementById("score").innerText = "Score\n"+ win_count;
-        //         document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
-        //         return;
-        //     }
             
         document.getElementById("score").innerText = "Score\n"+ win_count;
         NextTurn();
@@ -414,7 +411,16 @@ function finishTurn() {
     console.log("次のターン開始");
     // !脳汁モードの判定!!!
         if(finishturn_count == 5 && enemyturn_count == 0){
+            if(fever_flag == false){
+                sound("sounds/fever_win.mp3");
+            }
             fever_flag = true;
+        }
+
+        // *５ターン経過時点で、フィーバー条件は一度リセットする
+        if(finishturn_count == 5){
+            finishturn_count = 0;
+            enemyturn_count = 0;
         }
 
     // ボタン非表示
@@ -480,6 +486,8 @@ function updateUI() {
                     case 1:
                         console.log("ホイール（中央）クリックされました");
                         canAttack = false;
+                        changeImage_player('waza');
+                        playerAttack("waza");
 
                     break;
 
