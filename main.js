@@ -39,16 +39,23 @@ enemy_random();
             // ボタンが押された際、やり直しの画面が出ているかどうかのチェック
             if (document.getElementById('msg').innerText == "やり直しますか？") {
                 console.log('リスタート確定');
+                sound("sounds/button.mp3");
 
                     // hpを回復させる
                     p1Hp = 100;
                     p2Hp = 100;
 
                 win_count = 0;
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+
                 updateUI();
-                canAttack = true; // 攻撃許可を戻す
+
+                canAttack = true; // 攻撃許可を戻す[
+                
                 enemy_random();
                 changeImage_enemy('default');
+                character_photo.src = `images/character1/${character_Name_item}_default.png`;
+
                 document.getElementById('msg').innerText = "攻撃フェーズ";
 
                 // ボタン系非表示
@@ -58,13 +65,6 @@ enemy_random();
         });
     }
 
-    if (no) {
-        no.addEventListener('click', () => {
-            if (document.getElementById('msg').innerText == "やり直しますか？") {
-                console.log("リスタートしない");
-            }
-        });
-    }
     //******* */
 
 
@@ -87,6 +87,8 @@ enemy_random();
                 canAttack = true; // 攻撃許可を戻す
                 enemy_random();
                 changeImage_enemy('default');
+                character_photo.src = `images/character1/${character_Name_item}_default.png`;
+
                 document.getElementById('msg').innerText = "攻撃フェーズ";
 
                 document.querySelector(".guard-menu").style.display = 'none';
@@ -136,6 +138,7 @@ function playerAttack(type) {
     //  !１０が最大値
     switch (type){
         case "punch":
+            sound("sounds/punch.mp3");
             console.log("パンチ");
             if (enemy_Name == "whitekong")
                 dmg*= 10;
@@ -151,6 +154,7 @@ function playerAttack(type) {
             break;
 
         case "kick":
+            sound("sounds/kick.mp3");
             console.log("キック");
             if (enemy_Name == "whitekong"){
                 dmg*= 5;
@@ -179,9 +183,9 @@ function playerAttack(type) {
             finishTurn();
             // playerAttack関数を終わらせる
             return;
-        }else{
-            enemyTurn();
-        }
+                }else{
+                    enemyTurn();
+                }
 
 }
 // **********************************************************************************************************************/
@@ -214,9 +218,11 @@ function enemyTurn() {
             Guard = false;
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
+                    sound("sounds/damage.mp3");
                     console.log('ガード失敗...');
                     takeDamage(enemy_damage); 
                 }else {
+                    sound("sounds/guard_success.mp3");
                     console.log('ガード成功');
                     p2Hp -= 5;
                 }
@@ -229,6 +235,7 @@ function enemyTurn() {
 
 // **********************************ガードボタン読み取り************************/
     guardBtn.addEventListener('click', () => {
+        sound("sounds/guard_kamae.mp3");
         console.log("ガードボタンが押された");
         // ガードモーション
         changeImage_player("guard");
@@ -268,6 +275,7 @@ function finishTurn() {
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
     if (p1Hp <= 0) {
+        sound("sounds/lose.mp3");
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
         restart();
@@ -284,6 +292,9 @@ function finishTurn() {
         // クリア判定
             if(win_count == clear_count){
                 console.log("クリア処理");
+                sound("sounds/handcrap.mp3");
+                document.getElementById("waza").style.display = 'none';
+
                 document.getElementById("score").innerText = "Score\n"+ win_count;
                 document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
                 return;
@@ -500,4 +511,14 @@ function restart(){
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
+        document.getElementById('waza').style.display;
+    }
+
+function sound(src){
+    console.log("サウンド再生");
+
+            const punch_sound = new Audio(src);
+            punch_sound.volume = 0.5;
+            punch_sound.play();
+
 }
