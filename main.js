@@ -80,6 +80,9 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
                     p1Hp = 100;
                     p2Hp = 100;
 
+                    finishturn_count = 0;
+                    enemyturn_count = 0;
+
                 win_count = 0;
                 document.getElementById("score").innerText = "Score\n"+ win_count;
 
@@ -116,9 +119,13 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
                     p1Hp = 100;
                     p2Hp = 100;
 
+                finishturn_count = 0;
+                enemyturn_count = 0
+
                 //スコアをリセット
                 win_count = 0;
                 document.getElementById("score").innerText = "Score\n"+ win_count;
+
 
                 updateUI();
                 canAttack = true; // 攻撃許可を戻す
@@ -230,6 +237,7 @@ function playerAttack(type) {
                 break;
 
             case "waza":
+                sound("sounds/waza.mp3");
                 console.log("技");
                 if (enemy_Name == "whitekong"){
                     dmg*= 1;
@@ -410,6 +418,9 @@ function finishTurn() {
     function NextTurn(){
     console.log("次のターン開始");
     // !脳汁モードの判定!!!
+    console.log("finishturn_count"+finishturn_count);
+    console.log("enemyturn_count"+enemyturn_count);
+
         if(finishturn_count == 5 && enemyturn_count == 0){
             if(fever_flag == false){
                 sound("sounds/fever_win.mp3");
@@ -418,7 +429,7 @@ function finishTurn() {
         }
 
         // *５ターン経過時点で、フィーバー条件は一度リセットする
-        if(finishturn_count == 5){
+        if(finishturn_count >= 5){
             finishturn_count = 0;
             enemyturn_count = 0;
         }
@@ -635,6 +646,11 @@ function startTimer() {
     timerId = setInterval(() => {
         timeLeft--;
         console.log(timeLeft);
+
+        // フィーバー中は、タイマー停止
+        if(fever_flag){
+            return;
+        }
         
         // UIの表示を更新（HTMLに class="timer" がある前提）
         const timerDom = document.querySelector('.timer');
@@ -708,23 +724,46 @@ function sound(src){
 }
 
 function fever(){
-    console.log("フィーバー発動！");
+        console.log("フィーバー発動！タイマー停止");
+            
+            // 演出：背景を一時的に派手にする（CSSの調整が必要な場合があります）
+            document.body.style.backgroundColor = "gold";
+
+
+            // 演出：メッセージを書き換える
+            document.getElementById('msg').innerHTML = "<span style='color:white; font-size:1.5em;'>💥FEVER TIME💥</span>";
+
+            const timerDom = document.querySelector(".timer");
+            if (timerDom) {
+                timerDom.innerText = "0"; 
+                timerDom.style.color = "#13110b";
+    }
+            
+            // n秒間だけ
+            setTimeout(() => {
+                stopFever();
+            }, 20000); // 5000ミリ秒 = 5秒
+    }
+
+function stopFever(){
+    if (!fever_flag) return; 
+
+    fever_flag = false;
+    fever_count = 0;
+    document.body.style.backgroundColor = ""; 
+    document.getElementById('msg').innerText = "攻撃フェーズ";
     
-    // 演出：背景を一時的に派手にする（CSSの調整が必要な場合があります）
-    document.body.style.backgroundColor = "gold";
+    // 表示を本来の残り時間に戻す
+    const timerDom = document.querySelector('.timer');
+    if (timerDom) {
+        timerDom.innerText = timeLeft; 
+        timerDom.style.color = ""; 
+    }
 
-
-    // 演出：メッセージを書き換える
-    document.getElementById('msg').innerHTML = "<span style='color:white; font-size:1.5em;'>💥FEVER TIME💥</span>";
-    
-    // n秒間だけ
-    setTimeout(() => {
-        fever_flag = false;
-        fever_count = 0; // 次回また発動できるようにリセット
-        document.body.style.backgroundColor = ""; // 背景を戻す
-        document.getElementById('msg').innerText = "攻撃フェーズ（通常）";
-        bgm("sounds/normal_music.mp3");
-        console.log("フィーバー終了");
-
-    }, 20000); // 5000ミリ秒 = 5秒
+    bgm("sounds/normal_music.mp3");
+    console.log("フィーバー終了：タイマー再開");
+    finishturn_count = 0;
+    enemyturn_count = 0
 }
+
+    
