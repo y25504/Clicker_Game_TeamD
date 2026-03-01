@@ -1,41 +1,109 @@
 
 //************************************************初期設定ゾーン************************************* */
 
-//プレイヤーHPの作成
+//プレイヤーHP
 let p1Hp = 100;
+// 敵HP
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+// プレイヤーの攻撃力
+let dmg = 10;
+// ダメージを掛け算方式にしたので下の変数が必要になりました...
+var dmg_defaultVal = dmg;
+
+// 敵の攻撃力（ガードを失敗したときにくらうダメージ量）
 let enemy_damage = 50;
+// クリックして攻撃を行うので、それを許可するか否か
 let canAttack = true;
 
+// リスタート時のボタンdom
 var yes = document.getElementById('yes');
 var no = document.getElementById('no');
+
+// 勝数（勝利毎に+1）
+var win_count = 0;
+// 何回勝利でクリアとするか
+var clear_count = 3;
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
 
-if (yes) {
-    yes.addEventListener('click', () => {
-        if (document.getElementById('msg').innerText = "やり直しますか？") {
-            console.log('リスタート確定');
 
-            // hpを回復させる
-            p1Hp = 100;
-            p2Hp = 100;
 
-            updateUI();
-            canAttack = true; // 攻撃許可を戻す
-            enemy_random();
-            changeImage_enemy('default');
-            document.getElementById('msg').innerText = "攻撃フェーズ";
-            // 攻撃メニューを表示、ガードメニューを隠す
-            document.querySelector(".attack-menu_container").style.display = 'block';
-            document.querySelector(".guard-menu").style.display = 'none';
-        }
-    });
-}
+// *******************************************ボタン読み取り*************************************/
+    // ******リスタートのボタン読み
+    if (yes) {
+        yes.addEventListener('click', () => {
+            // ボタンが押された際、やり直しの画面が出ているかどうかのチェック
+            if (document.getElementById('msg').innerText == "やり直しますか？") {
+                console.log('リスタート確定');
+                sound("sounds/button.mp3");
+
+                    // hpを回復させる
+                    p1Hp = 100;
+                    p2Hp = 100;
+
+                win_count = 0;
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+
+                updateUI();
+
+                canAttack = true; // 攻撃許可を戻す[
+                
+                enemy_random();
+                changeImage_enemy('default');
+                character_photo.src = `images/character1/${character_Name_item}_default.png`;
+
+                document.getElementById('msg').innerText = "攻撃フェーズ";
+
+                // ボタン系非表示
+                document.querySelector('.attack-menu_container').style.display = 'none';
+                document.querySelector(".guard-menu").style.display = 'none';
+            }
+        });
+    }
+
+    //******* */
+
+
+    //********クリア後の読み取り */
+    // *******yesでリスタート関数に飛ぶ
+    if (yes) {
+        yes.addEventListener('click', () => {
+            if (document.getElementById('msg').innerText == "クリア!!!\nscore :"+ win_count) {
+                console.log("クリア後ボタン読み取り");
+            
+                    // hpを回復させる
+                    p1Hp = 100;
+                    p2Hp = 100;
+
+                //スコアをリセット
+                win_count = 0;
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+
+                updateUI();
+                canAttack = true; // 攻撃許可を戻す
+                enemy_random();
+                changeImage_enemy('default');
+                character_photo.src = `images/character1/${character_Name_item}_default.png`;
+
+                document.getElementById('msg').innerText = "攻撃フェーズ";
+
+                document.querySelector(".guard-menu").style.display = 'none';
+                document.querySelector('.attack-menu_container').style.display = 'none';
+
+            }
+        });
+    }
+
+    //************************* */
+
+//************************************************************************************* */
+
+
+
 
 // ボタン非表示
 document.querySelector('.attack-menu_container').style.display = 'none';
@@ -48,22 +116,10 @@ document.querySelector(".guard-menu").style.display = 'none';
 document.getElementById('msg').innerText = "攻撃フェーズ";
 changeImage_enemy('default');
 
-// button class attack-buttonのdomを取得
-    const attackButtons = document.querySelectorAll(".attack-button_item");
 
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
 
-// 各ボタンにクリックイベントを設定
-// forEach - 
-    attackButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log('ボタン押されました');
-            const type = button.id; // 'punch' か 'kick' を取得
-            console.log(type);
-            playerAttack(type); // 関数を実行
-        });
-    });
 //************************************************************************************************ */
 
 
@@ -71,41 +127,55 @@ changeImage_enemy('default');
 // ボタンの二重判定によるダブル攻撃を防ぐため、ボタンが一回押されたら消されるような処理をしている
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
+    console.log("攻撃ターン");
+    canAttack = false;
+    console.log(type);
 
-    console.log('type');
-
-    let dmg = 0;
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
 
-    // **********************************************白コングにはパンチが効く
-    //***********************************************緑ドラゴンにはキックが効く */
-    //***********************************************追加キャラには崩しが効く */
+    // 攻撃に応じてダメージが変わる＿その調整エリア
+    //  !１０が最大値
     switch (type){
         case "punch":
+            sound("sounds/punch.mp3");
             console.log("パンチ");
-            if (enemy_Name == "whitekong"){
-                dmg = 10;
-            }
+            if (enemy_Name == "whitekong")
+                dmg*= 10;
+            
+
             if (enemy_Name == "greendragon")
-                dmg = 5;
+                dmg*= 5;
+
+
+            if (enemy_Name == "death")
+                dmg*= 1;
+
             break;
+
         case "kick":
+            sound("sounds/kick.mp3");
             console.log("キック");
             if (enemy_Name == "whitekong"){
-                dmg = 5;
+                dmg*= 5;
             }
             if (enemy_Name == "greendragon"){
-                dmg = 10;
+                dmg*= 10;
             }
+            if (enemy_Name == "death"){
+                dmg*= 5;
+            }
+
             break;
         default :
         ("攻撃タイプが入力されていないエラー");
     }
 
-
+        console.log(dmg);
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
+
+        dmg = dmg_defaultVal;
         updateUI();
         
         // 敵HPが0以下になったら、勝敗判定の関数を呼び出す
@@ -113,9 +183,9 @@ function playerAttack(type) {
             finishTurn();
             // playerAttack関数を終わらせる
             return;
-        }else{
-            enemyTurn();
-        }
+                }else{
+                    enemyTurn();
+                }
 
 }
 // **********************************************************************************************************************/
@@ -125,6 +195,7 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+    console.log("ガードフェーズ");
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
 
@@ -133,6 +204,7 @@ function enemyTurn() {
 
     //*******敵のモーションプログラム(punch,kick,wazaの中からランダムで)************************************************ */
     //*******motionsの配列をいじることで、技が出る確率を調整できる* */
+
         const motions = ['punch', 'kick', 'waza'];
         const randomIndex = Math.floor(Math.random() * motions.length);
         changeImage_enemy(motions[randomIndex]);
@@ -146,23 +218,28 @@ function enemyTurn() {
             Guard = false;
             // ガードに成功していなければダメージ
                 if (!guardSuccess) {
+                    sound("sounds/damage.mp3");
                     console.log('ガード失敗...');
                     takeDamage(enemy_damage); 
                 }else {
+                    sound("sounds/guard_success.mp3");
                     console.log('ガード成功');
                     p2Hp -= 5;
                 }
-            // p2.classList.remove('punch-anim');
                 updateUI();
                 finishTurn();
-        }, 600); // 受付時間
+        }, 600); // 受付時間（この時間内にガードボタンを押せれば、ガード成功）
 
     }, 800);// 敵の攻撃時間
 }
 
 // **********************************ガードボタン読み取り************************/
     guardBtn.addEventListener('click', () => {
+        sound("sounds/guard_kamae.mp3");
         console.log("ガードボタンが押された");
+        // ガードモーション
+        changeImage_player("guard");
+
         if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
             guardSuccess = true;
             guard = false;
@@ -173,6 +250,7 @@ function enemyTurn() {
 });
 
 function takeDamage(dmg){
+    console.log("被ダメージ計算");
     p1Hp -= dmg;
         console.log("P1 HP :"+p1Hp);
 }
@@ -182,6 +260,9 @@ function takeDamage(dmg){
 // ************************************フェーズ終了************************************************************************//
 
 function finishTurn() {
+    console.log("ターンエンド");
+    canAttack = false;
+
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
         document.querySelector(".guard-menu").style.display = 'none';
@@ -189,10 +270,12 @@ function finishTurn() {
     // 攻撃ボタンを表示
         document.querySelector(".attack-menu_container").style.display = 'block';
         console.log("攻撃メニューを表示");
+
     
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
     if (p1Hp <= 0) {
+        sound("sounds/lose.mp3");
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
         restart();
@@ -200,19 +283,39 @@ function finishTurn() {
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
-        document.getElementById('msg').innerText = "K.O.";
+        console.log("K.O");
+        document.getElementById('msg').innerText = "K.O.";  
+        // 勝数に加算
+        win_count++;
+        console.log("win_count :"+ win_count);
+
+        // クリア判定
+            if(win_count == clear_count){
+                console.log("クリア処理");
+                sound("sounds/handcrap.mp3");
+                document.getElementById("waza").style.display = 'none';
+
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+                document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
+                return;
+            }
+        document.getElementById("score").innerText = "Score\n"+ win_count;
         NextTurn();
         return;
 
-    //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
-    }else if(p1Hp <= 0 && p2Hp <=0) {
-        document.getElementById('msg').innerText = "K.O.";
-        alert("DRAW");
-        return;
     //次のターンへ
     }else {
-        NextTurn();
-    }
+        document.querySelector('.attack-menu_container').style.display = 'none';
+        document.querySelector(".guard-menu").style.display = 'none';
+        document.getElementById('msg').innerText = "攻撃フェーズ";
+        // canAttackをtrueにすれば再度攻撃ができる（クリックを受け付ける）
+        canAttack = true;
+
+        // キャラクター、敵をデフォルト画像に直す
+        character_photo.src = `images/character1/${character_Name_item}_default.png`;
+        changeImage_enemy('default');
+
+        }
     }, 1000);
 }
 
@@ -224,22 +327,28 @@ function finishTurn() {
         document.querySelector('.attack-menu_container').style.display = 'none';
         
         canAttack = true;
-        changeImage_enemy('default');
+        enemy_random();
 
-        // メッセージを攻撃フェーズに直す
-        // キャラクタの画像を通常に戻す
+        p2Hp = 100;
+
             updateUI();
-            
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
+
+            // キャラクターと敵をデフォルト画像に変更
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
+            changeImage_enemy('default');
+
             console.log(character_photo);
         }
         
 
+
+
 // ************************************HPの更新******************************************************************
 //*********************攻撃フェーズ、ガードフェーズの際、この関数が使われる****************************** */
 function updateUI() {
+    console.log("UIの更新");
 
     //*******************************数値を一定の範囲に収めるのがMath.max***************************** */
     //************************.style.widthでhtmlの横幅を書き換える */
@@ -256,7 +365,6 @@ function updateUI() {
 
 
 // **************************マウス読み取り***************************************************
-// ! **************************eventlistner何回も呼び出すと連打バグの原因になる!!!!*******
 // 画面全体（window）に対してマウスダウンイベントを監視
 // クリックされたら、変数に1を入れる
 
@@ -270,20 +378,24 @@ function updateUI() {
                     case 0:
                         console.log("左クリックされました");
                         // クリックされたら、それ以降のクリックを無効化、連打を防止する
+                        canAttack = false;
                         changeImage_player('punch');
                         playerAttack("punch");
-                        
                     break;
+
                     case 1:
                         console.log("ホイール（中央）クリックされました");
+                        canAttack = false;
 
                     break;
+
                     case 2:
                         console.log("右クリックされました");
+                        canAttack = false;
                         changeImage_player('kick');
                         playerAttack("kick");
-
                     break;
+
                 }
 
     });
@@ -375,7 +487,7 @@ function updateUI() {
 // ****************************敵をランダムに変更する処理*****************************
 function enemy_random(){
     // 1. 名前のリスト
-    const enemies = ["whitekong", "greendragon"];
+    const enemies = ["whitekong", "greendragon","death"];
 
     // 2. ランダムに1つ選ぶ
     const randomName = enemies[Math.floor(Math.random() * enemies.length)];
@@ -388,9 +500,25 @@ function enemy_random(){
     }
 
 
+
+
+
+    // ***************************リスタート処理*******************************************
+    
+
 function restart(){
-    console.log("");
+    console.log("リスタート");
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
+        document.getElementById('waza').style.display;
+    }
+
+function sound(src){
+    console.log("サウンド再生");
+
+            const punch_sound = new Audio(src);
+            punch_sound.volume = 0.5;
+            punch_sound.play();
+
 }
