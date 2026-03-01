@@ -8,6 +8,8 @@ let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+// プレイヤーの攻撃力
+let dmg = 10;
 // 敵の攻撃力（ガードを失敗したときにくらうダメージ量）
 let enemy_damage = 50;
 // クリックして攻撃を行うので、それを許可するか否か
@@ -19,7 +21,8 @@ var no = document.getElementById('no');
 
 // 勝数（勝利毎に+1）
 var win_count = 0;
-
+// 何回勝利でクリアとするか
+var clear_count = 3;
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
@@ -82,40 +85,40 @@ changeImage_enemy('default');
 // **attack-menuはボタン系全般のdivのこと*//
 function playerAttack(type) {
     console.log("攻撃ターン");
-
+    canAttack = false;
     console.log(type);
 
-    let dmg = 0;
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
 
     // 攻撃に応じてダメージが変わる＿その調整エリア
+    //  !１０が最大値
     switch (type){
         case "punch":
             console.log("パンチ");
             if (enemy_Name == "whitekong")
-                dmg = 100;
+                dmg*= 10;
             
 
             if (enemy_Name == "greendragon")
-                dmg = 5;
+                dmg*= 5;
 
 
             if (enemy_Name == "death")
-                dmg = 50;
+                dmg*= 1;
 
             break;
 
         case "kick":
             console.log("キック");
             if (enemy_Name == "whitekong"){
-                dmg = 5;
+                dmg*= 5;
             }
             if (enemy_Name == "greendragon"){
-                dmg = 50;
+                dmg*= 10;
             }
             if (enemy_Name == "death"){
-                dmg = 35;
+                dmg*= 5;
             }
 
             break;
@@ -208,6 +211,8 @@ function takeDamage(dmg){
 
 function finishTurn() {
     console.log("ターンエンド");
+    canAttack = false;
+
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
         document.querySelector(".guard-menu").style.display = 'none';
@@ -215,6 +220,7 @@ function finishTurn() {
     // 攻撃ボタンを表示
         document.querySelector(".attack-menu_container").style.display = 'block';
         console.log("攻撃メニューを表示");
+
     
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
@@ -231,6 +237,15 @@ function finishTurn() {
         // 勝数に加算
         win_count++;
         console.log("win_count :"+ win_count);
+
+        // クリア判定
+            if(win_count == clear_count){
+                console.log("クリア処理");
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+                document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
+                return;
+            }
+        document.getElementById("score").innerText = "Score\n"+ win_count;
         NextTurn();
         return;
 
@@ -309,20 +324,24 @@ function updateUI() {
                     case 0:
                         console.log("左クリックされました");
                         // クリックされたら、それ以降のクリックを無効化、連打を防止する
+                        canAttack = false;
                         changeImage_player('punch');
                         playerAttack("punch");
-                        
                     break;
+
                     case 1:
                         console.log("ホイール（中央）クリックされました");
+                        canAttack = false;
 
                     break;
+
                     case 2:
                         console.log("右クリックされました");
+                        canAttack = false;
                         changeImage_player('kick');
                         playerAttack("kick");
-
                     break;
+
                 }
 
     });
@@ -439,4 +458,3 @@ function restart(){
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
 }
-

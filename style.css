@@ -18,6 +18,11 @@ body {
   justify-content: space-around;
 }
 
+#score{
+  color: #0088ff;
+  font-size: 30px;
+}
+
 #character_Name_item {
   font-size: 2.5rem;
   margin: 20px 0;
@@ -47,6 +52,12 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.timer{
+  color:rgb(25, 240, 25);
+  font-size: larger;
+  font-weight: bolder;
+}
+
 .hp-box {
   width: 45%;
 }
@@ -74,6 +85,7 @@ body {
   background-size: 200% 100%;
   transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
 
 
 /* --- 背景 --- */
