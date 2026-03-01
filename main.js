@@ -10,6 +10,9 @@ let guardSuccess = false;   //　ガードに成功したか
 
 // プレイヤーの攻撃力
 let dmg = 10;
+// ダメージを掛け算方式にしたので下の変数が必要になりました...
+var dmg_defaultVal = dmg;
+
 // 敵の攻撃力（ガードを失敗したときにくらうダメージ量）
 let enemy_damage = 50;
 // クリックして攻撃を行うので、それを許可するか否か
@@ -29,8 +32,8 @@ enemy_random();
 
 
 
-// *******************************************リスタートの読み取り*************************************/
-// ボタンyesがあるかどうか確認
+// *******************************************ボタン読み取り*************************************/
+    // ******リスタートのボタン読み
     if (yes) {
         yes.addEventListener('click', () => {
             // ボタンが押された際、やり直しの画面が出ているかどうかのチェック
@@ -41,13 +44,15 @@ enemy_random();
                     p1Hp = 100;
                     p2Hp = 100;
 
+                win_count = 0;
                 updateUI();
                 canAttack = true; // 攻撃許可を戻す
                 enemy_random();
                 changeImage_enemy('default');
                 document.getElementById('msg').innerText = "攻撃フェーズ";
-                // 攻撃メニューを表示、ガードメニューを隠す
-                document.querySelector(".attack-menu_container").style.display = 'block';
+
+                // ボタン系非表示
+                document.querySelector('.attack-menu_container').style.display = 'none';
                 document.querySelector(".guard-menu").style.display = 'none';
             }
         });
@@ -60,6 +65,42 @@ enemy_random();
             }
         });
     }
+    //******* */
+
+
+    //********クリア後の読み取り */
+    // *******yesでリスタート関数に飛ぶ
+    if (yes) {
+        yes.addEventListener('click', () => {
+            if (document.getElementById('msg').innerText == "クリア!!!\nscore :"+ win_count) {
+                console.log("クリア後ボタン読み取り");
+            
+                    // hpを回復させる
+                    p1Hp = 100;
+                    p2Hp = 100;
+
+                //スコアをリセット
+                win_count = 0;
+                document.getElementById("score").innerText = "Score\n"+ win_count;
+
+                updateUI();
+                canAttack = true; // 攻撃許可を戻す
+                enemy_random();
+                changeImage_enemy('default');
+                document.getElementById('msg').innerText = "攻撃フェーズ";
+
+                document.querySelector(".guard-menu").style.display = 'none';
+                document.querySelector('.attack-menu_container').style.display = 'none';
+
+            }
+        });
+    }
+
+    //************************* */
+
+//************************************************************************************* */
+
+
 
 
 // ボタン非表示
@@ -126,9 +167,11 @@ function playerAttack(type) {
         ("攻撃タイプが入力されていないエラー");
     }
 
-
+        console.log(dmg);
         p2Hp -= dmg;
         console.log("Enemy HP:"+p2Hp);
+
+        dmg = dmg_defaultVal;
         updateUI();
         
         // 敵HPが0以下になったら、勝敗判定の関数を呼び出す
