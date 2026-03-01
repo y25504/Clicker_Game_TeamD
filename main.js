@@ -27,8 +27,20 @@ var win_count = 0;
 // 何回勝利でクリアとするか
 var clear_count = 3;
 
+// タイマー設定
+let timeLeft = 30; // 制限時間
+let timerLeft_default = timeLeft;
+let timerId = null; // タイマーを止めるためのID
+let timer_running = false;
+
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
+
+// タイマーの初期値をhtml側に反映させる
+document.querySelector(".timer").innerText = `${timeLeft}`;
+
+
+
 
 
 
@@ -40,6 +52,14 @@ enemy_random();
             if (document.getElementById('msg').innerText == "やり直しますか？") {
                 console.log('リスタート確定');
                 sound("sounds/button.mp3");
+
+                // タイマーをリセット
+                timer_running = false;
+                timeLeft = timerLeft_default;
+                clearInterval(timerId);
+                const timerDom = document.querySelector('.timer');
+                if (timerDom) timerDom.innerText = timeLeft;
+                
 
                     // hpを回復させる
                     p1Hp = 100;
@@ -129,6 +149,14 @@ changeImage_enemy('default');
 function playerAttack(type) {
     console.log("攻撃ターン");
     canAttack = false;
+
+    if(!timer_running){
+        startTimer();
+        timer_running = true;
+        console.log("タイマー起動");
+    }
+
+
     console.log(type);
 
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
@@ -521,4 +549,44 @@ function sound(src){
             punch_sound.volume = 0.5;
             punch_sound.play();
 
+}
+
+
+
+// **********************************タイマー*****************************************
+
+function startTimer() {
+    // もし既に動いていたら一旦止める（二重起動防止）
+    if (timerId) clearInterval(timerId);
+
+    timerId = setInterval(() => {
+        timeLeft--;
+        console.log(timeLeft);
+        
+        // UIの表示を更新（HTMLに class="timer" がある前提）
+        const timerDom = document.querySelector('.timer');
+        if (timerDom) {
+            timerDom.innerText = timeLeft;
+        }
+
+        // 0秒になったら
+        if (timeLeft <= 0) {
+            // clearintervalでタイマーを止める
+            clearInterval(timerId);
+            timeUp(); // タイムアップ時の処理へ
+        }
+    }, 1000);
+}
+
+function timeUp() {
+    canAttack = false;
+    document.getElementById('msg').innerText = "TIME UP";
+    
+    // 判定：HPが多い方の勝ち、などの処理をここに入れる
+    if (p1Hp > p2Hp) {
+        alert("TIME UP! YOU WIN!");
+    } else {
+        alert("TIME UP... YOU LOSE");
+        restart();
+    }
 }
