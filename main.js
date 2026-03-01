@@ -1,17 +1,24 @@
 
 //************************************************初期設定ゾーン************************************* */
 
-//プレイヤーHPの作成
+//プレイヤーHP
 let p1Hp = 100;
+// 敵HP
 let p2Hp = 100;
 let Guard = false;          //　ガード受付中か
 let guardSuccess = false;   //　ガードに成功したか
 
+// 敵の攻撃力（ガードを失敗したときにくらうダメージ量）
 let enemy_damage = 50;
+// クリックして攻撃を行うので、それを許可するか否か
 let canAttack = true;
 
+// リスタート時のボタンdom
 var yes = document.getElementById('yes');
 var no = document.getElementById('no');
+
+// 勝数（勝利毎に+1）
+var win_count = 0;
 
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
@@ -23,6 +30,7 @@ enemy_random();
 // ボタンyesがあるかどうか確認
     if (yes) {
         yes.addEventListener('click', () => {
+            // ボタンが押された際、やり直しの画面が出ているかどうかのチェック
             if (document.getElementById('msg').innerText == "やり直しますか？") {
                 console.log('リスタート確定');
 
@@ -41,8 +49,14 @@ enemy_random();
             }
         });
     }
-    
 
+    if (no) {
+        no.addEventListener('click', () => {
+            if (document.getElementById('msg').innerText == "やり直しますか？") {
+                console.log("リスタートしない");
+            }
+        });
+    }
 
 
 // ボタン非表示
@@ -75,14 +89,12 @@ function playerAttack(type) {
         enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
 
-    // **********************************************白コングにはパンチが効く
-    //***********************************************緑ドラゴンにはキックが効く */
-    //***********************************************追加キャラには崩しが効く */
+    // 攻撃に応じてダメージが変わる＿その調整エリア
     switch (type){
         case "punch":
             console.log("パンチ");
             if (enemy_Name == "whitekong")
-                dmg = 20;
+                dmg = 100;
             
 
             if (enemy_Name == "greendragon")
@@ -100,7 +112,7 @@ function playerAttack(type) {
                 dmg = 5;
             }
             if (enemy_Name == "greendragon"){
-                dmg = 10;
+                dmg = 50;
             }
             if (enemy_Name == "death"){
                 dmg = 35;
@@ -142,6 +154,7 @@ function enemyTurn() {
 
     //*******敵のモーションプログラム(punch,kick,wazaの中からランダムで)************************************************ */
     //*******motionsの配列をいじることで、技が出る確率を調整できる* */
+
         const motions = ['punch', 'kick', 'waza'];
         const randomIndex = Math.floor(Math.random() * motions.length);
         changeImage_enemy(motions[randomIndex]);
@@ -161,10 +174,9 @@ function enemyTurn() {
                     console.log('ガード成功');
                     p2Hp -= 5;
                 }
-            // p2.classList.remove('punch-anim');
                 updateUI();
                 finishTurn();
-        }, 600); // 受付時間
+        }, 600); // 受付時間（この時間内にガードボタンを押せれば、ガード成功）
 
     }, 800);// 敵の攻撃時間
 }
@@ -172,6 +184,9 @@ function enemyTurn() {
 // **********************************ガードボタン読み取り************************/
     guardBtn.addEventListener('click', () => {
         console.log("ガードボタンが押された");
+        // ガードモーション
+        changeImage_player("guard");
+
         if (Guard) { // enemyTurn関数でセットしたGuardフラグがtrueなら
             guardSuccess = true;
             guard = false;
@@ -213,6 +228,9 @@ function finishTurn() {
     }else if(p2Hp <= 0) {
         console.log("K.O");
         document.getElementById('msg').innerText = "K.O.";  
+        // 勝数に加算
+        win_count++;
+        console.log("win_count :"+ win_count);
         NextTurn();
         return;
 
@@ -223,6 +241,11 @@ function finishTurn() {
         document.getElementById('msg').innerText = "攻撃フェーズ";
         // canAttackをtrueにすれば再度攻撃ができる（クリックを受け付ける）
         canAttack = true;
+
+        // キャラクター、敵をデフォルト画像に直す
+        character_photo.src = `images/character1/${character_Name_item}_default.png`;
+        changeImage_enemy('default');
+
         }
     }, 1000);
 }
@@ -236,17 +259,17 @@ function finishTurn() {
         
         canAttack = true;
         enemy_random();
-        changeImage_enemy('default');
 
         p2Hp = 100;
 
-        // メッセージを攻撃フェーズに直す
-        // キャラクタの画像を通常に戻す
             updateUI();
-            
 
             document.getElementById('msg').innerText = "攻撃フェーズ";
+
+            // キャラクターと敵をデフォルト画像に変更
             character_photo.src = `images/character1/${character_Name_item}_default.png`;
+            changeImage_enemy('default');
+
             console.log(character_photo);
         }
         
