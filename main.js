@@ -25,13 +25,20 @@ var no = document.getElementById('no');
 // 勝数（勝利毎に+1）
 var win_count = 0;
 // 何回勝利でクリアとするか
-var clear_count = 3;
+// var clear_count = 3;
 
 // タイマー設定
-let timeLeft = 30; // 制限時間
+let timeLeft = 10; // 制限時間
 let timerLeft_default = timeLeft;
 let timerId = null; // タイマーを止めるためのID
 let timer_running = false;
+
+// フェーズが終了してから、タイムアップ処理をいれるため、作成した変数
+let timeover = false
+
+// オーディオ設定
+let currentBGM = null;
+
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
@@ -59,6 +66,7 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
                 clearInterval(timerId);
                 const timerDom = document.querySelector('.timer');
                 if (timerDom) timerDom.innerText = timeLeft;
+
                 
 
                     // hpを回復させる
@@ -72,7 +80,7 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
 
                 canAttack = true; // 攻撃許可を戻す[
                 
-                enemy_random();
+                // enemy_random();
                 changeImage_enemy('default');
                 character_photo.src = `images/character1/${character_Name_item}_default.png`;
 
@@ -92,8 +100,10 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
     // *******yesでリスタート関数に飛ぶ
     if (yes) {
         yes.addEventListener('click', () => {
-            if (document.getElementById('msg').innerText == "クリア!!!\nscore :"+ win_count) {
+            if (document.getElementById('msg').innerText == `TIME UP!\n最終撃破数: ${win_count}体`) {
                 console.log("クリア後ボタン読み取り");
+                sound("sounds/button.mp3");
+                canAttack = false;
             
                     // hpを回復させる
                     p1Hp = 100;
@@ -105,14 +115,15 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
 
                 updateUI();
                 canAttack = true; // 攻撃許可を戻す
-                enemy_random();
+                // enemy_random();
                 changeImage_enemy('default');
                 character_photo.src = `images/character1/${character_Name_item}_default.png`;
 
-                document.getElementById('msg').innerText = "攻撃フェーズ";
+                // document.getElementById('msg').innerText = "攻撃フェーズ";
+                restart();
 
-                document.querySelector(".guard-menu").style.display = 'none';
-                document.querySelector('.attack-menu_container').style.display = 'none';
+                // document.querySelector(".guard-menu").style.display = 'none';
+                // document.querySelector('.attack-menu_container').style.display = 'none';
 
             }
         });
@@ -121,8 +132,6 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
     //************************* */
 
 //************************************************************************************* */
-
-
 
 
 // ボタン非表示
@@ -135,12 +144,15 @@ document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
 changeImage_enemy('default');
+timeover = false;
 
 
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
 
 //************************************************************************************************ */
+
+
 
 
 //****************************************************プレイヤー攻撃フェーズ****************************************** */
@@ -150,9 +162,12 @@ function playerAttack(type) {
     console.log("攻撃ターン");
     canAttack = false;
 
+
     if(!timer_running){
         startTimer();
         timer_running = true;
+        // 最初に押されたときだけ、bgmを付ける
+        bgm("sounds/normal_music.mp3");
         console.log("タイマー起動");
     }
 
@@ -173,11 +188,11 @@ function playerAttack(type) {
             
 
             if (enemy_Name == "greendragon")
-                dmg*= 5;
+                dmg*= 0;
 
 
             if (enemy_Name == "death")
-                dmg*= 1;
+                dmg*= 0;
 
             break;
 
@@ -185,13 +200,13 @@ function playerAttack(type) {
             sound("sounds/kick.mp3");
             console.log("キック");
             if (enemy_Name == "whitekong"){
-                dmg*= 5;
+                dmg*= 0;
             }
             if (enemy_Name == "greendragon"){
                 dmg*= 10;
             }
             if (enemy_Name == "death"){
-                dmg*= 5;
+                dmg*= 10;
             }
 
             break;
@@ -223,6 +238,7 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+
     console.log("ガードフェーズ");
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
@@ -303,13 +319,22 @@ function finishTurn() {
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
     if (p1Hp <= 0) {
+        clearInterval(timerId);
+        timeLeft = timerLeft_default;
         sound("sounds/lose.mp3");
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
         restart();
         return;
     
-    //p2（CPU）のHPのみ0以下の場合（勝利）
+    // 敵に勝ち、かつタイムオーバー待ちだった場合
+    }
+    if(p2Hp <= 0 && timeover == true){
+        console.log("ゲーム終了");
+        timeUp();
+
+
+
     }else if(p2Hp <= 0) {
         console.log("K.O");
         document.getElementById('msg').innerText = "K.O.";  
@@ -317,16 +342,17 @@ function finishTurn() {
         win_count++;
         console.log("win_count :"+ win_count);
 
-        // クリア判定
-            if(win_count == clear_count){
-                console.log("クリア処理");
-                sound("sounds/handcrap.mp3");
-                document.getElementById("waza").style.display = 'none';
+        // // クリア判定
+        //     if(win_count == clear_count){
+        //         console.log("クリア処理");
+        //         sound("sounds/handcrap.mp3");
+        //         document.getElementById("waza").style.display = 'none';
 
-                document.getElementById("score").innerText = "Score\n"+ win_count;
-                document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
-                return;
-            }
+        //         document.getElementById("score").innerText = "Score\n"+ win_count;
+        //         document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
+        //         return;
+        //     }
+            
         document.getElementById("score").innerText = "Score\n"+ win_count;
         NextTurn();
         return;
@@ -535,21 +561,21 @@ function enemy_random(){
     
 
 function restart(){
+    canAttack = false;
+
+    if (currentBGM) {
+        console.log(currentBGM);
+        currentBGM.pause();
+        console.log("bgmを止めます");
+        currentBGM.currentTime = 0;
+    }
+
     console.log("リスタート");
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
-        document.getElementById('waza').style.display;
+        document.getElementById('waza').style.display = 'none';
     }
-
-function sound(src){
-    console.log("サウンド再生");
-
-            const punch_sound = new Audio(src);
-            punch_sound.volume = 0.5;
-            punch_sound.play();
-
-}
 
 
 
@@ -573,20 +599,64 @@ function startTimer() {
         if (timeLeft <= 0) {
             // clearintervalでタイマーを止める
             clearInterval(timerId);
-            timeUp(); // タイムアップ時の処理へ
+            timeover = true;
+            console.log("タイムアップ。フェーズ終了待ち");
         }
     }, 1000);
 }
 
 function timeUp() {
     canAttack = false;
-    document.getElementById('msg').innerText = "TIME UP";
-    
-    // 判定：HPが多い方の勝ち、などの処理をここに入れる
-    if (p1Hp > p2Hp) {
-        alert("TIME UP! YOU WIN!");
-    } else {
-        alert("TIME UP... YOU LOSE");
-        restart();
+    timer_running = false;
+    timeover = false;
+    clearInterval(timerId);
+    timeLeft = timerLeft_default;
+
+    if (currentBGM) {
+        currentBGM.pause();
+        console.log("bgmを止めます");
+        currentBGM.currentTime = 0;
+        currentBGM = null;
     }
+    
+
+    sound("sounds/handcrap.mp3");
+    document.querySelector('.attack-menu_container').style.display = 'block';
+    document.getElementById('msg').innerText = `TIME UP!\n最終撃破数: ${win_count}体`;
+    // この後、ボタンが押されたら、リスタートに飛ぶ
+    
+    }
+
+
+
+// ***********************************************音関係********************************************************
+function bgm(src){
+
+    if (!currentBGM) {
+        currentBGM = new Audio(src);
+        currentBGM.volume = 0.3;
+        currentBGM.loop = true;
+    }else{
+        // includesを使い、srcの中身を確認。おなじ曲名であれば、曲チェンジをしない。
+        if(!currentBGM.src.includes(src)){
+            currentBGM.src = src;
+        }
+    }
+    currentBGM.currentTime = 0;
+    currentBGM.play();
+
 }
+
+
+
+
+
+function sound(src){
+    console.log("サウンド再生");
+
+            const punch_sound = new Audio(src);
+            punch_sound.volume = 0.5;
+            punch_sound.play();
+
+}
+
