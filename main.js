@@ -28,7 +28,7 @@ var win_count = 0;
 // var clear_count = 3;
 
 // タイマー設定
-let timeLeft = 10; // 制限時間
+let timeLeft = 60; // 制限時間
 let timerLeft_default = timeLeft;
 let timerId = null; // タイマーを止めるためのID
 let timer_running = false;
@@ -38,6 +38,12 @@ let timeover = false
 
 // オーディオ設定
 let currentBGM = null;
+
+// 脳汁モード
+let enemyturn_count = 0;
+let finishturn_count = 0;
+let fever_flag = false;
+let fever_count = 0;
 
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
@@ -59,6 +65,7 @@ document.querySelector(".timer").innerText = `${timeLeft}`;
             if (document.getElementById('msg').innerText == "やり直しますか？") {
                 console.log('リスタート確定');
                 sound("sounds/button.mp3");
+
 
                 // タイマーをリセット
                 timer_running = false;
@@ -161,6 +168,7 @@ timeover = false;
 function playerAttack(type) {
     console.log("攻撃ターン");
     canAttack = false;
+    console.log(type);
 
 
     if(!timer_running){
@@ -171,48 +179,64 @@ function playerAttack(type) {
         console.log("タイマー起動");
     }
 
-
-    console.log(type);
-
-        enemy_Name = document.getElementById("enemy_Name_item").textContent;
-
-
-    // 攻撃に応じてダメージが変わる＿その調整エリア
-    //  !１０が最大値
-    switch (type){
-        case "punch":
-            sound("sounds/punch.mp3");
-            console.log("パンチ");
-            if (enemy_Name == "whitekong")
-                dmg*= 10;
-            
-
-            if (enemy_Name == "greendragon")
-                dmg*= 0;
-
-
-            if (enemy_Name == "death")
-                dmg*= 0;
-
-            break;
-
-        case "kick":
-            sound("sounds/kick.mp3");
-            console.log("キック");
-            if (enemy_Name == "whitekong"){
-                dmg*= 0;
-            }
-            if (enemy_Name == "greendragon"){
-                dmg*= 10;
-            }
-            if (enemy_Name == "death"){
-                dmg*= 10;
-            }
-
-            break;
-        default :
-        ("攻撃タイプが入力されていないエラー");
+    // !フィーバーかどうか判定
+    if(fever_flag == true && fever_count == 0){
+        bgm("sounds/Attack!_music.mp3");
+        document.getElementById('msg').innerText = "🔥 FEVER MODE !!! 🔥";
+        fever_count++;
+        fever();
     }
+
+
+
+    if(fever_flag){
+        // フィーバー中はどの攻撃(パンチ)でも特大ダメージ
+        dmg = 100; 
+        sound("sounds/fever_punch.mp3");
+    }else{
+        // 攻撃に応じてダメージが変わる＿その調整エリア
+        //  !１０が最大値
+        enemy_Name = document.getElementById("enemy_Name_item").textContent;
+        switch (type){
+            case "punch":
+                sound("sounds/punch.mp3");
+                console.log("パンチ");
+                if (enemy_Name == "whitekong")
+                    dmg*= 10;
+                
+
+                if (enemy_Name == "greendragon")
+                    dmg*= 0;
+
+
+                if (enemy_Name == "death")
+                    dmg*= 0;
+
+                break;
+
+            case "kick":
+                sound("sounds/kick.mp3");
+                console.log("キック");
+                if (enemy_Name == "whitekong"){
+                    dmg*= 0;
+                }
+                if (enemy_Name == "greendragon"){
+                    dmg*= 10;
+                }
+                if (enemy_Name == "death"){
+                    dmg*= 10;
+                }
+
+                break;
+
+            case "fever":
+                dmg*10;
+                break;
+
+            default :
+            ("攻撃タイプが入力されていないエラー");
+    }
+}
 
         console.log(dmg);
         p2Hp -= dmg;
@@ -229,6 +253,11 @@ function playerAttack(type) {
                 }else{
                     enemyTurn();
                 }
+    
+
+
+
+    
 
 }
 // **********************************************************************************************************************/
@@ -238,6 +267,8 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+    enemyturn_count++;
+    console.log("enemyturn_count :"+enemyturn_count);
 
     console.log("ガードフェーズ");
     document.getElementById('msg').innerText = "敵のフェーズ";
@@ -304,8 +335,13 @@ function takeDamage(dmg){
 // ************************************フェーズ終了************************************************************************//
 
 function finishTurn() {
+    finishturn_count++;
+
     console.log("ターンエンド");
     canAttack = false;
+
+    // フィーバー中は、待ち時間を0にする
+    let waitTime = fever_flag ? 0: 1000;
 
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
@@ -370,12 +406,16 @@ function finishTurn() {
         changeImage_enemy('default');
 
         }
-    }, 1000);
+    }, waitTime);
 }
 
 
     function NextTurn(){
     console.log("次のターン開始");
+    // !脳汁モードの判定!!!
+        if(finishturn_count == 5 && enemyturn_count == 0){
+            fever_flag = true;
+        }
 
     // ボタン非表示
         document.querySelector('.attack-menu_container').style.display = 'none';
@@ -449,7 +489,6 @@ function updateUI() {
                         changeImage_player('kick');
                         playerAttack("kick");
                     break;
-
                 }
 
     });
@@ -660,3 +699,24 @@ function sound(src){
 
 }
 
+function fever(){
+    console.log("フィーバー発動！");
+    
+    // 演出：背景を一時的に派手にする（CSSの調整が必要な場合があります）
+    document.body.style.backgroundColor = "gold";
+
+
+    // 演出：メッセージを書き換える
+    document.getElementById('msg').innerHTML = "<span style='color:white; font-size:1.5em;'>💥FEVER TIME💥</span>";
+    
+    // n秒間だけ
+    setTimeout(() => {
+        fever_flag = false;
+        fever_count = 0; // 次回また発動できるようにリセット
+        document.body.style.backgroundColor = ""; // 背景を戻す
+        document.getElementById('msg').innerText = "攻撃フェーズ（通常）";
+        bgm("sounds/normal_music.mp3");
+        console.log("フィーバー終了");
+
+    }, 20000); // 5000ミリ秒 = 5秒
+}

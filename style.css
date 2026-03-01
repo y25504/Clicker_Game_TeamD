@@ -189,3 +189,32 @@ button:active {
   z-index: 10;
   pointer-events: none;
 }
+
+/* 明るく豪華な背景アニメーション */
+@keyframes bright-fever {
+  0%   { background-color: #fff9e6; } /* 薄いゴールド */
+  25%  { background-color: #f0fff0; } /* 薄いミント */
+  50%  { background-color: #f0f4ff; } /* 薄いブルー */
+  75%  { background-color: #fff0f5; } /* 薄いラベンダー */
+  100% { background-color: #fff9e6; }
+}
+
+.fever-bg {
+  /* 3秒かけて優雅に色が回ります */
+  animation: bright-fever 3s ease-in-out infinite;
+  transition: background-color 1s ease;
+}
+
+/* 文字もキラキラさせる */
+.fever-text {
+  display: inline-block;
+  font-weight: bold;
+  color: #ffcc00; /* 金色 */
+  text-shadow: 2px 2px 0px #fff, 0 0 15px #ffaa00;
+  animation: bounce 0.5s ease infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
