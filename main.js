@@ -211,20 +211,19 @@ function finishTurn() {
     
     //p2（CPU）のHPのみ0以下の場合（勝利）
     }else if(p2Hp <= 0) {
+        console.log("K.O");
         document.getElementById('msg').innerText = "K.O.";  
         NextTurn();
         return;
 
-    //p1（プレイヤー）とp2（CPU）両方のHPが0以下の場合（引き分け）    
-    }else if(p1Hp <= 0 && p2Hp <=0) {
-        document.getElementById('msg').innerText = "K.O.";
-        alert("DRAW");
-        return;
-
     //次のターンへ
     }else {
-        NextTurn();
-    }
+        document.querySelector('.attack-menu_container').style.display = 'none';
+        document.querySelector(".guard-menu").style.display = 'none';
+        document.getElementById('msg').innerText = "攻撃フェーズ";
+        // canAttackをtrueにすれば再度攻撃ができる（クリックを受け付ける）
+        canAttack = true;
+        }
     }, 1000);
 }
 
