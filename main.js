@@ -488,43 +488,73 @@ function updateUI() {
 // 画面全体（window）に対してマウスダウンイベントを監視
 // クリックされたら、変数に1を入れる
 
-    window.addEventListener('mousedown', (event) => {
-        // ********breakdownはデブ相手に使う（崩し）***********************************
-        // クリックを許可するか否か
-            if (!canAttack)
-                return;
+let isLeftDown = false;
+let isRightDown = false;
 
-                switch (event.button) {
-                    case 0:
-                        console.log("左クリックされました");
-                        // クリックされたら、それ以降のクリックを無効化、連打を防止する
-                        canAttack = false;
-                        changeImage_player('punch');
-                        playerAttack("punch");
-                    break;
+window.addEventListener('mousedown', (event) => {
+    if (!canAttack || timeover) return;
 
-                    case 1:
-                        console.log("ホイール（中央）クリックされました");
-                        canAttack = false;
-                        changeImage_player('waza');
-                        playerAttack("waza");
+    // ボタン番号を変数に保存（setTimeoutの中で確実に使うため）
+    const buttonNum = event.button;
 
-                    break;
+    if (buttonNum === 0) isLeftDown = true;
+    if (buttonNum === 2) isRightDown = true;
 
-                    case 2:
-                        console.log("右クリックされました");
-                        canAttack = false;
-                        changeImage_player('kick');
-                        playerAttack("kick");
-                    break;
-                }
+    // 1. ホイール
+    if (buttonNum === 1) {
+        canAttack = false;
+        changeImage_player('waza');
+        playerAttack("waza");
+        return;
+    }
 
-    });
+    // 2. 同時押し
+    if (isLeftDown && isRightDown) {
+        canAttack = false;
+        isLeftDown = false;
+        isRightDown = false;
+        changeImage_player('waza');
+        playerAttack("waza");
+        return;
+    }
 
-    // 画面全体で右クリックメニュー（コンテキストメニュー）を禁止する
-    window.addEventListener('contextmenu', (event) => {
+    // 3. 単発判定 (ここを修正)
+    setTimeout(() => {
+        if (!canAttack) return;
+
+        // event.button ではなく、保存しておいた buttonNum を使う
+        if (buttonNum === 0 && !isRightDown) {
+            canAttack = false;
+            changeImage_player('punch');
+            playerAttack("punch");
+        } 
+        else if (buttonNum === 2 && !isLeftDown) {
+            canAttack = false;
+            changeImage_player('kick');
+            playerAttack("kick");
+        }
+    }, 50); 
+});
+
+// 1. 右クリックメニュー（コンテキストメニュー）を完全に禁止
+window.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+}, false);
+
+// 2. ホイールクリック（中央ボタン）によるオートスクロールを無効化
+// 'mousedown' だけでなく 'auxclick' でも preventDefault() を呼ぶのが最も確実です
+window.addEventListener('mousedown', (event) => {
+    if (event.button === 1) {
         event.preventDefault();
-    });
+    }
+}, { passive: false });
+
+window.addEventListener('auxclick', (event) => {
+    if (event.button === 1) {
+        event.preventDefault();
+    }
+}, false);
+
 
 // オイカワの担当場所(date:02/16)
 // **************************************モーションプログラム****************************************************************//
