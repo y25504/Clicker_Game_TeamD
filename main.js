@@ -32,7 +32,7 @@ var win_count = 0;
 // var clear_count = 3;
 
 // タイマー設定
-let timeLeft = 60; // 制限時間
+let timeLeft = 10; // 制限時間
 let timerLeft_default = timeLeft;
 let timerId = null; // タイマーを止めるためのID
 let timer_running = false;
@@ -256,6 +256,22 @@ function playerAttack(type) {
                 }
                 if (enemy_Name == "death"){
                     dmg*= 10;
+                }
+
+            case "smash":
+                sound("sounds/waza.mp3");
+                console.log("スマッシュ!");
+                if (enemy_Name == "whitekong"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "greendragon"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "death"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "flower"){
+                    dmg*=10
                 }
 
             default :
@@ -492,7 +508,7 @@ let isLeftDown = false;
 let isRightDown = false;
 
 window.addEventListener('mousedown', (event) => {
-    if (!canAttack || timeover) return;
+    if (!canAttack) return;
 
     // ボタン番号を変数に保存（setTimeoutの中で確実に使うため）
     const buttonNum = event.button;
@@ -678,7 +694,6 @@ function restart(){
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
-        document.getElementById('waza').style.display = 'none';
     }
 
 
