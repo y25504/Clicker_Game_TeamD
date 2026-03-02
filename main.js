@@ -311,9 +311,10 @@ function enemyTurn() {
                 if (!guardSuccess) {
                     sound("sounds/damage.mp3");
                     console.log('ガード失敗...');
-                    takeDamage(10); 
+                    takeDamage(enemy_damage); 
                 }else {
                     console.log('ガード成功');
+                    sound("sounds/guard_success.mp3");
                     p2Hp -= 5;
                 }
                 updateUI();
