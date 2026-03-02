@@ -758,6 +758,13 @@ function fever(){
                 timerDom.innerText = "0"; 
                 timerDom.style.color = "#13110b";
     }
+
+    setTimeout(() => {
+        if(fever_flag) {
+            bgm("sounds/countdown.mp3");
+            console.log("フィーバー終了3秒前");
+        }
+    },17000);
             
             // n秒間だけ
             setTimeout(() => {
