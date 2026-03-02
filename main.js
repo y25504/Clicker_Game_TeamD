@@ -311,15 +311,14 @@ function enemyTurn() {
                 if (!guardSuccess) {
                     sound("sounds/damage.mp3");
                     console.log('ガード失敗...');
-                    takeDamage(enemy_damage); 
+                    takeDamage(10); 
                 }else {
-                    sound("sounds/guard_success.mp3");
                     console.log('ガード成功');
                     p2Hp -= 5;
                 }
                 updateUI();
                 finishTurn();
-        }, 600); // 受付時間（この時間内にガードボタンを押せれば、ガード成功）
+        }, 600); // 受付時間
 
     }, 800);// 敵の攻撃時間
 }
