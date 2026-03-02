@@ -15,6 +15,10 @@ var dmg_defaultVal = dmg;
 
 // 敵の攻撃力（ガードを失敗したときにくらうダメージ量）
 let enemy_damage = 50;
+
+// 前ターンの敵キャラ名前保持(同じキャラが次出てこないようにするために使用)
+let lastEnemyName = "";
+
 // クリックして攻撃を行うので、それを許可するか否か
 let canAttack = true;
 
@@ -33,6 +37,9 @@ let timerLeft_default = timeLeft;
 let timerId = null; // タイマーを止めるためのID
 let timer_running = false;
 
+// ***待ち時間変更用変数
+let waitTime_val = 500;
+
 // フェーズが終了してから、タイムアップ処理をいれるため、作成した変数
 let timeover = false
 
@@ -44,6 +51,8 @@ let enemyturn_count = 0;
 let finishturn_count = 0;
 let fever_flag = false;
 let fever_count = 0;
+
+// 
 
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
@@ -357,7 +366,7 @@ function finishTurn() {
     canAttack = false;
 
     // フィーバー中は、待ち時間を0にする
-    let waitTime = fever_flag ? 0: 1000;
+    let waitTime = fever_flag ? 0: waitTime_val;
 
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
@@ -603,6 +612,13 @@ function enemy_random(){
 
     // 2. ランダムに1つ選ぶ
     const randomName = enemies[Math.floor(Math.random() * enemies.length)];
+
+    if(randomName == lastEnemyName){
+        console.log("前の敵が出そうなので再帰します!!");
+        return enemy_random();
+    }
+
+    lastEnemyName = randomName;
 
     // 3. 画面の中身を書き換える
     console.log("敵の名前" + randomName);
