@@ -740,7 +740,7 @@ function fever(){
 
     setTimeout(() => {
         if(fever_flag) {
-            sound("sounds/countdown.mp3");
+            bgm("sounds/countdown.mp3");
             console.log("フィーバー終了3秒前");
         }
     },17000);
