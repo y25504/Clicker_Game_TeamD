@@ -11,33 +11,45 @@ body {
 }
 
 /* キャラクター名の装飾 */
-
-.name_container{
+.name_container {
   display: flex;
-  gap: 200px;
-  justify-content: space-around;
+  width: 100%;           
+  max-width: 1200px;     
+  margin: 0 auto;        
+  justify-content: center; 
+  align-items: center;   
+  padding: 10px 0;
+  box-sizing: border-box; 
 }
 
-#score{
-  color: #0088ff;
-  font-size: 30px;
-}
-
-#character_Name_item {
-  font-size: 2.5rem;
-  margin: 20px 0;
-  letter-spacing: 4px;
-  color: #00d4ff;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-}
-
+/* 3つの要素すべてに同じルールを適用 */
+#character_Name_item,
+#score,
 #enemy_Name_item {
-  font-size: 2.5rem;
-  margin: 20px 0;
-  letter-spacing: 4px;
-  color: #ff0000;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  flex: 1;               
+  margin: 0 !important;  
+  padding: 0 15px;
+  white-space: nowrap;   
 }
+
+/* 左：プレイヤー名は左端に寄せる */
+#character_Name_item {
+  text-align: left;
+  color: #00d4ff;
+}
+
+/* 中央：スコアは「絶対中央」 */
+#score {
+  text-align: center;
+  color: #0088ff
+}
+
+/* 右：敵名は右端に寄せる */
+#enemy_Name_item {
+  text-align: right;
+  color: #ff0000;
+}
+
 
 /* --- HPバー --- */
 .hp-container {
