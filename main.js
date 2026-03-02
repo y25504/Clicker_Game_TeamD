@@ -1,6 +1,6 @@
 
 //************************************************初期設定ゾーン************************************* */
-
+// ***Version2.0
 //プレイヤーHP
 let p1Hp = 100;
 // 敵HP
@@ -25,10 +25,35 @@ var no = document.getElementById('no');
 // 勝数（勝利毎に+1）
 var win_count = 0;
 // 何回勝利でクリアとするか
-var clear_count = 3;
+// var clear_count = 3;
+
+// タイマー設定
+let timeLeft = 60; // 制限時間
+let timerLeft_default = timeLeft;
+let timerId = null; // タイマーを止めるためのID
+let timer_running = false;
+
+// フェーズが終了してから、タイムアップ処理をいれるため、作成した変数
+let timeover = false
+
+// オーディオ設定
+let currentBGM = null;
+
+// 脳汁モード
+let enemyturn_count = 0;
+let finishturn_count = 0;
+let fever_flag = false;
+let fever_count = 0;
+
 
 // 最初に名前を設定することで、nullエラーを防ぐ！！
 enemy_random();
+
+// タイマーの初期値をhtml側に反映させる
+document.querySelector(".timer").innerText = `${timeLeft}`;
+
+
+
 
 
 
@@ -41,9 +66,22 @@ enemy_random();
                 console.log('リスタート確定');
                 sound("sounds/button.mp3");
 
+
+                // タイマーをリセット
+                timer_running = false;
+                timeLeft = timerLeft_default;
+                clearInterval(timerId);
+                const timerDom = document.querySelector('.timer');
+                if (timerDom) timerDom.innerText = timeLeft;
+
+                
+
                     // hpを回復させる
                     p1Hp = 100;
                     p2Hp = 100;
+
+                    finishturn_count = 0;
+                    enemyturn_count = 0;
 
                 win_count = 0;
                 document.getElementById("score").innerText = "Score\n"+ win_count;
@@ -52,7 +90,7 @@ enemy_random();
 
                 canAttack = true; // 攻撃許可を戻す[
                 
-                enemy_random();
+                // enemy_random();
                 changeImage_enemy('default');
                 character_photo.src = `images/character1/${character_Name_item}_default.png`;
 
@@ -72,27 +110,34 @@ enemy_random();
     // *******yesでリスタート関数に飛ぶ
     if (yes) {
         yes.addEventListener('click', () => {
-            if (document.getElementById('msg').innerText == "クリア!!!\nscore :"+ win_count) {
+            if (document.getElementById('msg').innerText == `TIME UP!\n最終撃破数: ${win_count}体`) {
                 console.log("クリア後ボタン読み取り");
+                sound("sounds/button.mp3");
+                canAttack = false;
             
                     // hpを回復させる
                     p1Hp = 100;
                     p2Hp = 100;
 
+                finishturn_count = 0;
+                enemyturn_count = 0
+
                 //スコアをリセット
                 win_count = 0;
                 document.getElementById("score").innerText = "Score\n"+ win_count;
 
+
                 updateUI();
                 canAttack = true; // 攻撃許可を戻す
-                enemy_random();
+                // enemy_random();
                 changeImage_enemy('default');
                 character_photo.src = `images/character1/${character_Name_item}_default.png`;
 
-                document.getElementById('msg').innerText = "攻撃フェーズ";
+                // document.getElementById('msg').innerText = "攻撃フェーズ";
+                restart();
 
-                document.querySelector(".guard-menu").style.display = 'none';
-                document.querySelector('.attack-menu_container').style.display = 'none';
+                // document.querySelector(".guard-menu").style.display = 'none';
+                // document.querySelector('.attack-menu_container').style.display = 'none';
 
             }
         });
@@ -101,8 +146,6 @@ enemy_random();
     //************************* */
 
 //************************************************************************************* */
-
-
 
 
 // ボタン非表示
@@ -115,12 +158,15 @@ document.querySelector(".guard-menu").style.display = 'none';
 // 初期状態は攻撃フェーズ
 document.getElementById('msg').innerText = "攻撃フェーズ";
 changeImage_enemy('default');
+timeover = false;
 
 
 // ガードボタンのdomを取得
     const guardBtn = document.getElementById('guard');
 
 //************************************************************************************************ */
+
+
 
 
 //****************************************************プレイヤー攻撃フェーズ****************************************** */
@@ -131,45 +177,82 @@ function playerAttack(type) {
     canAttack = false;
     console.log(type);
 
-        enemy_Name = document.getElementById("enemy_Name_item").textContent;
 
-
-    // 攻撃に応じてダメージが変わる＿その調整エリア
-    //  !１０が最大値
-    switch (type){
-        case "punch":
-            sound("sounds/punch.mp3");
-            console.log("パンチ");
-            if (enemy_Name == "whitekong")
-                dmg*= 10;
-            
-
-            if (enemy_Name == "greendragon")
-                dmg*= 5;
-
-
-            if (enemy_Name == "death")
-                dmg*= 1;
-
-            break;
-
-        case "kick":
-            sound("sounds/kick.mp3");
-            console.log("キック");
-            if (enemy_Name == "whitekong"){
-                dmg*= 5;
-            }
-            if (enemy_Name == "greendragon"){
-                dmg*= 10;
-            }
-            if (enemy_Name == "death"){
-                dmg*= 5;
-            }
-
-            break;
-        default :
-        ("攻撃タイプが入力されていないエラー");
+    if(!timer_running){
+        startTimer();
+        timer_running = true;
+        // 最初に押されたときだけ、bgmを付ける
+        bgm("sounds/normal_music.mp3");
+        console.log("タイマー起動");
     }
+
+    // !フィーバーかどうか判定
+    if(fever_flag == true && fever_count == 0){
+        bgm("sounds/Attack!_music.mp3");
+        document.getElementById('msg').innerText = "🔥 FEVER MODE !!! 🔥";
+        fever_count++;
+        fever();
+    }
+
+
+
+    if(fever_flag){
+        // フィーバー中はどの攻撃でも特大ダメージ
+        dmg = 100; 
+        sound("sounds/fever_punch.mp3");
+    }else{
+        // 攻撃に応じてダメージが変わる＿その調整エリア
+        //  !１０が最大値
+        enemy_Name = document.getElementById("enemy_Name_item").textContent;
+        switch (type){
+            case "punch":
+                sound("sounds/punch.mp3");
+                console.log("パンチ");
+                if (enemy_Name == "whitekong")
+                    dmg*= 10;
+                
+
+                if (enemy_Name == "greendragon")
+                    dmg*= 1;
+
+
+                if (enemy_Name == "death")
+                    dmg*= 1;
+
+                break;
+
+            case "kick":
+                sound("sounds/kick.mp3");
+                console.log("キック");
+                if (enemy_Name == "whitekong"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "greendragon"){
+                    dmg*= 10;
+                }
+                if (enemy_Name == "death"){
+                    dmg*= 1;
+                }
+
+                break;
+
+            case "waza":
+                sound("sounds/waza.mp3");
+                console.log("技");
+                if (enemy_Name == "whitekong"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "greendragon"){
+                    dmg*= 1;
+                }
+                if (enemy_Name == "death"){
+                    dmg*= 10;
+                }
+
+            default :
+            ("攻撃タイプが入力されていないエラー");
+    }
+}
 
         console.log(dmg);
         p2Hp -= dmg;
@@ -186,6 +269,11 @@ function playerAttack(type) {
                 }else{
                     enemyTurn();
                 }
+    
+
+
+
+    
 
 }
 // **********************************************************************************************************************/
@@ -195,6 +283,9 @@ function playerAttack(type) {
 // ************************************************************************************ガードフェーズ********************/
 //敵の攻撃フェーズ（ガードチャンス）
 function enemyTurn() {
+    enemyturn_count++;
+    console.log("enemyturn_count :"+enemyturn_count);
+
     console.log("ガードフェーズ");
     document.getElementById('msg').innerText = "敵のフェーズ";
     document.querySelector('.guard-menu').style.display = 'block';
@@ -222,13 +313,13 @@ function enemyTurn() {
                     console.log('ガード失敗...');
                     takeDamage(enemy_damage); 
                 }else {
-                    sound("sounds/guard_success.mp3");
                     console.log('ガード成功');
+                    sound("sounds/guard_success.mp3");
                     p2Hp -= 5;
                 }
                 updateUI();
                 finishTurn();
-        }, 600); // 受付時間（この時間内にガードボタンを押せれば、ガード成功）
+        }, 600); // 受付時間
 
     }, 800);// 敵の攻撃時間
 }
@@ -260,8 +351,13 @@ function takeDamage(dmg){
 // ************************************フェーズ終了************************************************************************//
 
 function finishTurn() {
+    finishturn_count++;
+
     console.log("ターンエンド");
     canAttack = false;
+
+    // フィーバー中は、待ち時間を0にする
+    let waitTime = fever_flag ? 0: 1000;
 
     setTimeout(() => {
     //UIをプレイヤー攻撃に切り替え
@@ -275,30 +371,29 @@ function finishTurn() {
     //決着判定
     //p1（プレイヤー）のHPのみ0以下の場合（敗北）
     if (p1Hp <= 0) {
+        clearInterval(timerId);
+        timeLeft = timerLeft_default;
         sound("sounds/lose.mp3");
         document.getElementById('msg').innerText = "K.O.";
         alert("YOU LOSE...");
         restart();
         return;
     
-    //p2（CPU）のHPのみ0以下の場合（勝利）
+    // 敵に勝ち、かつタイムオーバー待ちだった場合
+    }
+    if(p2Hp <= 0 && timeover == true){
+        console.log("ゲーム終了");
+        timeUp();
+
+
+
     }else if(p2Hp <= 0) {
         console.log("K.O");
         document.getElementById('msg').innerText = "K.O.";  
         // 勝数に加算
         win_count++;
         console.log("win_count :"+ win_count);
-
-        // クリア判定
-            if(win_count == clear_count){
-                console.log("クリア処理");
-                sound("sounds/handcrap.mp3");
-                document.getElementById("waza").style.display = 'none';
-
-                document.getElementById("score").innerText = "Score\n"+ win_count;
-                document.getElementById('msg').innerText = "クリア!!!\nscore :"+ win_count;
-                return;
-            }
+            
         document.getElementById("score").innerText = "Score\n"+ win_count;
         NextTurn();
         return;
@@ -316,12 +411,28 @@ function finishTurn() {
         changeImage_enemy('default');
 
         }
-    }, 1000);
+    }, waitTime);
 }
 
 
     function NextTurn(){
     console.log("次のターン開始");
+    // !脳汁モードの判定!!!
+    console.log("finishturn_count"+finishturn_count);
+    console.log("enemyturn_count"+enemyturn_count);
+
+        if(finishturn_count == 5 && enemyturn_count == 0){
+            if(fever_flag == false){
+                sound("sounds/fever_win.mp3");
+            }
+            fever_flag = true;
+        }
+
+        // *５ターン経過時点で、フィーバー条件は一度リセットする
+        if(finishturn_count >= 5){
+            finishturn_count = 0;
+            enemyturn_count = 0;
+        }
 
     // ボタン非表示
         document.querySelector('.attack-menu_container').style.display = 'none';
@@ -386,6 +497,8 @@ function updateUI() {
                     case 1:
                         console.log("ホイール（中央）クリックされました");
                         canAttack = false;
+                        changeImage_player('waza');
+                        playerAttack("waza");
 
                     break;
 
@@ -395,7 +508,6 @@ function updateUI() {
                         changeImage_player('kick');
                         playerAttack("kick");
                     break;
-
                 }
 
     });
@@ -507,12 +619,100 @@ function enemy_random(){
     
 
 function restart(){
+    canAttack = false;
+
+    if (currentBGM) {
+        console.log(currentBGM);
+        currentBGM.pause();
+        console.log("bgmを止めます");
+        currentBGM.currentTime = 0;
+    }
+
     console.log("リスタート");
     document.getElementById('msg').innerText = "やり直しますか？";
     // ボタンを表示
         document.querySelector('.attack-menu_container').style.display = 'block';
-        document.getElementById('waza').style.display;
+        document.getElementById('waza').style.display = 'none';
     }
+
+
+
+// **********************************タイマー*****************************************
+
+function startTimer() {
+    // もし既に動いていたら一旦止める（二重起動防止）
+    if (timerId) clearInterval(timerId);
+
+    timerId = setInterval(() => {
+        timeLeft--;
+        console.log(timeLeft);
+
+        // フィーバー中は、タイマー停止
+        if(fever_flag){
+            return;
+        }
+        
+        // UIの表示を更新（HTMLに class="timer" がある前提）
+        const timerDom = document.querySelector('.timer');
+        if (timerDom) {
+            timerDom.innerText = timeLeft;
+        }
+
+        // 0秒になったら
+        if (timeLeft <= 0) {
+            // clearintervalでタイマーを止める
+            clearInterval(timerId);
+            timeover = true;
+            console.log("タイムアップ。フェーズ終了待ち");
+        }
+    }, 1000);
+}
+
+function timeUp() {
+    canAttack = false;
+    timer_running = false;
+    timeover = false;
+    clearInterval(timerId);
+    timeLeft = timerLeft_default;
+
+    if (currentBGM) {
+        currentBGM.pause();
+        console.log("bgmを止めます");
+        currentBGM.currentTime = 0;
+        currentBGM = null;
+    }
+    
+
+    sound("sounds/handcrap.mp3");
+    document.querySelector('.attack-menu_container').style.display = 'block';
+    document.getElementById('msg').innerText = `TIME UP!\n最終撃破数: ${win_count}体`;
+    // この後、ボタンが押されたら、リスタートに飛ぶ
+    
+    }
+
+
+
+// ***********************************************音関係********************************************************
+function bgm(src){
+
+    if (!currentBGM) {
+        currentBGM = new Audio(src);
+        currentBGM.volume = 0.3;
+        currentBGM.loop = true;
+    }else{
+        // includesを使い、srcの中身を確認。おなじ曲名であれば、曲チェンジをしない。
+        if(!currentBGM.src.includes(src)){
+            currentBGM.src = src;
+        }
+    }
+    currentBGM.currentTime = 0;
+    currentBGM.play();
+
+}
+
+
+
+
 
 function sound(src){
     console.log("サウンド再生");
@@ -522,3 +722,48 @@ function sound(src){
             punch_sound.play();
 
 }
+
+function fever(){
+        console.log("フィーバー発動！タイマー停止");
+            
+            // 演出：背景を一時的に派手にする（CSSの調整が必要な場合があります）
+            document.body.style.backgroundColor = "gold";
+
+
+            // 演出：メッセージを書き換える
+            document.getElementById('msg').innerHTML = "<span style='color:white; font-size:1.5em;'>💥FEVER TIME💥</span>";
+
+            const timerDom = document.querySelector(".timer");
+            if (timerDom) {
+                timerDom.innerText = "0"; 
+                timerDom.style.color = "#13110b";
+    }
+            
+            // n秒間だけ
+            setTimeout(() => {
+                stopFever();
+            }, 20000); // 5000ミリ秒 = 5秒
+    }
+
+function stopFever(){
+    if (!fever_flag) return; 
+
+    fever_flag = false;
+    fever_count = 0;
+    document.body.style.backgroundColor = ""; 
+    document.getElementById('msg').innerText = "攻撃フェーズ";
+    
+    // 表示を本来の残り時間に戻す
+    const timerDom = document.querySelector('.timer');
+    if (timerDom) {
+        timerDom.innerText = timeLeft; 
+        timerDom.style.color = ""; 
+    }
+
+    bgm("sounds/normal_music.mp3");
+    console.log("フィーバー終了：タイマー再開");
+    finishturn_count = 0;
+    enemyturn_count = 0
+}
+
+    
