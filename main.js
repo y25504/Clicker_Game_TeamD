@@ -258,6 +258,10 @@ function playerAttack(type) {
                     dmg*= 10;
                 }
 
+                if (enemy_Name == "flower"){
+                    dmg*= 10;
+                }
+
             default :
             ("攻撃タイプが入力されていないエラー");
     }
