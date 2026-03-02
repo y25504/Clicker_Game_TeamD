@@ -612,7 +612,7 @@ function updateUI() {
 // ****************************敵をランダムに変更する処理*****************************
 function enemy_random(){
     // 1. 名前のリスト
-    const enemies = ["whitekong", "greendragon","death"];
+    const enemies = ["whitekong", "greendragon","death","flower"];
 
     // 2. ランダムに1つ選ぶ
     const randomName = enemies[Math.floor(Math.random() * enemies.length)];
