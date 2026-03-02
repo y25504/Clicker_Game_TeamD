@@ -1,6 +1,6 @@
 
 //************************************************初期設定ゾーン************************************* */
-
+// ***Version2.0
 //プレイヤーHP
 let p1Hp = 100;
 // 敵HP
@@ -313,13 +313,13 @@ function enemyTurn() {
                     console.log('ガード失敗...');
                     takeDamage(enemy_damage); 
                 }else {
-                    sound("sounds/guard_success.mp3");
                     console.log('ガード成功');
+                    sound("sounds/guard_success.mp3");
                     p2Hp -= 5;
                 }
                 updateUI();
                 finishTurn();
-        }, 600); // 受付時間（この時間内にガードボタンを押せれば、ガード成功）
+        }, 600); // 受付時間
 
     }, 800);// 敵の攻撃時間
 }
